@@ -3,22 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Switch Payload Launcher</title>
+    <title>Super Payload Launcher</title>
     <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
-    <h1 class="nouserselect">Switch Payload Launcher 🚀🎮</h1>
-    
+    <h1 class="nouserselect">Super Payload Launcher 🚀🎮</h1>
+
     <div class="instruction" id="i1">
         <h3 class="nouserselect">1. Put your Nintendo Switch into RCM mode</h1>
-        <p class="nouserselect">You can do this by turning off the console completely, then holding the power button while also holding the volume buttons. This may take some practise. You will know it has worked when your Switch screen stays black, and doesn't appear to have turned on.</p>
-        <a class="button1" onclick="loadDevice()"><div class="nouserselect">Find device in RCM mode</div></a>
+        <p class="nouserselect">Insert the RCM jig, plug your Switch into the computer and turn it all the way off. Then hold the power button while holding the volume buttons. This may take some practise, and you can use <a target="_blank" href="https://www.youtube.com/watch?v=d042IoBkJjI">this handy guide on YouTube</a> for assistance. When it's in RCM mode the app will detect it.</p>
+        <a id="devicestatuscontainerdiv" class="displaybox nouserselect" >
+            <div id="devicestatusprogressdiv" class="sk-chase"></div>
+            <div id="devicestatusdiv" class="displayboxinner nouserselect"></div>
+        </a>
     </div>
 
     <div class="instruction" id="i2">
         <h3 class="nouserselect">2. Select a payload to send across to your Nintendo Switch</h1>
-        <a class="button1" onclick="selectPayload()"><div class="nouserselect">Select a payload .bin file</div></a>
+        <a id="payloadbutton" class="button1" onclick="selectPayload()"></a>
     </div>
 
     <div class="instruction" id="i3">
@@ -29,8 +32,10 @@
     <script src="switch.js"></script>
     <script>
         window.addEventListener('load', function () {
-            updateSteps();
-        })
+            create_auto_device_find_event();
+            loadDevice();
+            doWindowsDriverCheck();
+        });
     </script>
 </body>
 

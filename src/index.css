@@ -1,21 +1,32 @@
+:root {
+  --main-background-color: #121212;
+  --title-text-color: rgb(255, 255, 255);
+  --subtitle-text-color: rgb(255, 255, 255);
+  --text-color: rgb(255, 255, 255);
+  --hyperlink-color: rgb(214, 161, 16);
+
+  --searching-device-color: rgb(214, 161, 16);
+  --device-found-color: rgb(33, 214, 16);
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: #121212;
+  background-color: var(--main-background-color);
   margin: auto;
   max-width: 38rem;
   padding: 2rem;
 }
 
 h1 {
-  color: rgb(255, 255, 255);
+  color: var(--title-text-color);
 }
 
 h3 {
-  color: rgb(255, 255, 255);
+  color: var(--subtitle-text-color);
 }
 
 p {
-  color: rgb(255, 255, 255);
+  color: var(--text-color);
 }
 
 .instruction {
@@ -29,8 +40,36 @@ p {
   user-select: none;          /* Likely future */      
 }
 
+a:link {
+  color: var(--hyperlink-color);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a.displaybox{
+  display:inline-block;
+  padding:0.20em 1.0em;
+  border:0.1em solid #ffffff;
+  margin:10px 0.2em 0.2em 0;
+  border-radius:0.12em;
+  box-sizing: border-box;
+  text-decoration:none;
+  font-family:'Roboto',sans-serif;
+  font-weight:bold;
+  color:var(--text-color);
+  text-align:center;
+  transition: all 0.2s;
+}
+
+.displayboxinner{
+  display: block; 
+  text-align: center;
+}
+
 a.button1{
   display:inline-block;
+  align-items: left;
+  justify-content: space-between;
   padding:0.25em 1.2em;
   border:0.1em solid #FFFFFF;
   margin:0 0.2em 0.2em 0;
@@ -38,7 +77,7 @@ a.button1{
   box-sizing: border-box;
   text-decoration:none;
   font-family:'Roboto',sans-serif;
-  font-weight:300;
+  font-weight:bold;
   color:#FFFFFF;
   text-align:center;
   transition: all 0.2s;
@@ -49,14 +88,16 @@ a.button1:hover{
   background-color:#FFFFFF;
 }
 
+.noHover{
+  pointer-events: none;
+}
+
 @media all and (max-width:30em){
   a.button1{
     display: block;
     margin: 0.4em auto;
   }
 }
-
-
 
 .fade-in {
   animation: fadeIn ease 2s forwards;
@@ -121,3 +162,21 @@ a.button1:hover{
     0% {opacity:1;}
     100% {opacity:0.2;}
   }
+
+ 
+  
+.sk-chase {
+  width: 20px;
+  height: 20px;
+  display: inline;
+  float: left;
+  margin-top:10px;
+  margin-bottom: 10px;
+  margin-right:20px;
+  background-color: var(--searching-device-color);
+  animation: sk-chase 2.5s infinite linear both;
+}
+
+@keyframes sk-chase {
+  100% { transform: rotate(360deg); } 
+}

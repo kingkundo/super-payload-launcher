@@ -13,8 +13,8 @@
   },
   "keywords": [],
   "author": {
-    "name": "Tom Taylor",
-    "email": "tom@tomxxi.com"
+    "name": "version_control",
+    "email": "versionxcontrol@gmail.com"
   },
   "buildDependenciesFromSource": true,
   "nodeGypRebuild": true,
@@ -22,7 +22,9 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "build/icon.ico"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -49,6 +51,7 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
+    "sweetalert2": "^10.15.5",
     "webusb": "^2.2.0"
   },
   "devDependencies": {
