@@ -18,18 +18,10 @@ const createWindow = () => {
         var height = 650;
     }
 
-    // const iconUrl = url.format({
-    //     pathname: path.join(__dirname, 'icons/mac/icon.icns'),
-    //     protocol: 'file: ',
-    //     slashes: true
-    // })
-    // console.log(iconUrl);
-
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: width,
         height: height,
-        //icon: iconUrl,
         webPreferences: {
             nodeIntegration: true
         }

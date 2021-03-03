@@ -119,6 +119,7 @@ function doWindowsDriverCheck() {
             showCancelButton: false
         }).then((result) => {
             if (result.isConfirmed) {
+                markDriverCheckCompleted();
                 const driverprocess = exec('"' + path.join(__dirname, '/apx_driver/InstallDriver.exe') + '"', function (error, stdout, stderr) { 
                     console.log(error);
                 });
