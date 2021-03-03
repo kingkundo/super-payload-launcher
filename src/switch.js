@@ -17,7 +17,7 @@ var currentStep = 1;
 
 // HELPERS ----------------------------------------------
 function create_auto_device_find_event() {
-    clearInterval(create_auto_device_find_event);
+    //clearInterval(create_auto_device_find_event);
     const interval = setInterval(function () {
         if (validateDevice()) {
             clearInterval(create_auto_device_find_event);
@@ -73,6 +73,28 @@ function smashCompleteDialog(success) {
 }
 
 function doWindowsDriverCheck() {
+    const fs = require('fs');
+    const path = require('path');
+    var driverCheckCompleteFilePath = path.join(__dirname, 'drivercheckcomplete');
+
+    function driverCheckAlreadyCompleted() {
+        try {
+            if (fs.existsSync(driverCheckCompleteFilePath)) {
+                console.log('driver check already completed apparently...');
+                return true;
+            }
+        } catch (err) { }
+        return false;
+    }
+
+    function markDriverCheckCompleted() {
+        fs.closeSync(fs.openSync(driverCheckCompleteFilePath, 'w'));
+    }
+
+    if (driverCheckAlreadyCompleted()) {
+        return;
+    }
+
     const os = require('os');
     if ((os.type() == 'Windows_NT') && (!validateDevice())) {
         const Swal = require('sweetalert2');
@@ -83,15 +105,15 @@ function doWindowsDriverCheck() {
             background: 'var(--main-background-color)',
             confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>Install driver</b></a>',
             showConfirmButton: true,
-            cancelButtonText: "<a class='nouserselect' style='color:var(--text-color);'>It's already installed</a>",
-            showCancelButton: true
+            denyButtonText: "<a class='nouserselect' style='color:var(--text-color);'>It's already installed</a>",
+            showDenyButton: true,
+            showCancelButton: false
         }).then((result) => {
             if (result.isConfirmed) {
-                const path = require('path');
                 const { exec } = require('child_process');
-
-                const driverprocess = exec(path.join(__dirname, '/apx_driver/InstallDriver.exe'), function (error, stdout, stderr) { });
-
+                const driverprocess = exec('"' + path.join(__dirname, '/apx_driver/InstallDriver.exe') + '"', function (error, stdout, stderr) { 
+                    console.log(error);
+                });
                 driverprocess.on('exit', function (code) {
                     const Toast = Swal.mixin({
                         toast: true,
@@ -114,6 +136,7 @@ function doWindowsDriverCheck() {
                             title: titleHTML,
                             background: 'var(--main-background-color)'
                         });
+                        markDriverCheckCompleted();
                     } else {
                         title = 'Driver installation failed or was stopped';
                         titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
@@ -125,6 +148,9 @@ function doWindowsDriverCheck() {
                         });
                     }
                 });
+            } else if (result.isDenied) {
+                console.log('denied');
+                markDriverCheckCompleted();
             }
         });
     }
@@ -196,7 +222,6 @@ function validatePayload() {
 // PRIMARY
 
 function updateSteps() {
-
     function updateButton(button, confirm, text = '') {
         if (confirm) {
             button.style.border = '0.1em solid  var(--device-found-color)';
@@ -210,7 +235,6 @@ function updateSteps() {
             button.innerHTML = '<div class="nouserselect">' + text + '</div>';
         }
     }
-
 
     currentStep = 1;
 
@@ -273,7 +297,7 @@ async function launchPayload() {
     if (os.type() == 'Windows_NT') {
         const path = require('path');
         const { exec } = require('child_process');
-        const smashProcess = exec(path.join(__dirname, 'TegraRcmSmash.exe ' + payloadPath), function (error, stdout, stderr) { });
+        const smashProcess = exec('"' + path.join(__dirname, 'TegraRcmSmash.exe' + '" ' + payloadPath), function (error, stdout, stderr) { });
         smashProcess.on('exit', function (code) {
             if (code == 0) {
                 smashCompleteDialog(true);
@@ -339,7 +363,6 @@ async function loadDevice() {
         device = await USB.requestDevice({ filters: [{ vendorId: 0x0955 }] });
         updateSteps();
     } catch (error) {
-        //console.log(error);
         device = null;
         updateSteps();
         return;

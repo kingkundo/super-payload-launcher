@@ -2,7 +2,7 @@
   "name": "super-payload-launcher",
   "productName": "Super Payload Launcher",
   "version": "1.0.0",
-  "description": "A new and user friendly multiplatform switch payload injecting tool",
+  "description": "An easy and user friendly Nintendo Switch payload injecting tool",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
