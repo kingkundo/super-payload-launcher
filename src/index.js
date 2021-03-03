@@ -1,10 +1,8 @@
 const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
-const fs = require('fs')
 const path = require('path');
-const url = require('url');
 
 // Global developer mode toggle.
-var devMode = false;
+var devMode = true;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -105,4 +103,4 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
-app.allowRendererProcessReuse = false
+app.allowRendererProcessReuse = false;

@@ -1,3 +1,11 @@
+const USB = require("WEBUSB").usb;
+const Swal = require('sweetalert2');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { ipcRenderer } = require('electron')
+const { exec } = require('child_process');
+
 const INTERMEZZO = new Uint8Array([
     0x44, 0x00, 0x9F, 0xE5, 0x01, 0x11, 0xA0, 0xE3, 0x40, 0x20, 0x9F, 0xE5, 0x00, 0x20, 0x42, 0xE0,
     0x08, 0x00, 0x00, 0xEB, 0x01, 0x01, 0xA0, 0xE3, 0x10, 0xFF, 0x2F, 0xE1, 0x00, 0x00, 0xA0, 0xE1,
@@ -28,6 +36,12 @@ function create_auto_device_find_event() {
     }, 1000);
 }
 
+window.addEventListener('load', function () {
+    create_auto_device_find_event();
+    loadDevice();
+    doWindowsDriverCheck();
+});
+
 function reset() {
     device = null;
     payloadPath = '';
@@ -38,7 +52,6 @@ function reset() {
 function smashCompleteDialog(success) {
     reset();
 
-    const Swal = require('sweetalert2');
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -73,8 +86,6 @@ function smashCompleteDialog(success) {
 }
 
 function doWindowsDriverCheck() {
-    const fs = require('fs');
-    const path = require('path');
     var driverCheckCompleteFilePath = path.join(__dirname, 'drivercheckcomplete');
 
     function driverCheckAlreadyCompleted() {
@@ -95,9 +106,7 @@ function doWindowsDriverCheck() {
         return;
     }
 
-    const os = require('os');
     if ((os.type() == 'Windows_NT') && (!validateDevice())) {
-        const Swal = require('sweetalert2');
         Swal.fire({
             title: '<a class="nouserselect" style="color:var(--title-text-color);">Have you installed the driver?</a>',
             html: "<a class='nouserselect' style='color:var(--subtitle-text-color);'>On Windows you have to install a driver to talk to the Switch. If you haven't already, make sure to install it now. It's very simple.</a>",
@@ -110,43 +119,42 @@ function doWindowsDriverCheck() {
             showCancelButton: false
         }).then((result) => {
             if (result.isConfirmed) {
-                const { exec } = require('child_process');
                 const driverprocess = exec('"' + path.join(__dirname, '/apx_driver/InstallDriver.exe') + '"', function (error, stdout, stderr) { 
                     console.log(error);
                 });
                 driverprocess.on('exit', function (code) {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 5000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.addEventListener('mouseenter', Swal.stopTimer)
-                            toast.addEventListener('mouseleave', Swal.resumeTimer)
-                        }
-                    });
+                    // const Toast = Swal.mixin({
+                    //     toast: true,
+                    //     position: 'top-end',
+                    //     showConfirmButton: false,
+                    //     timer: 5000,
+                    //     timerProgressBar: true,
+                    //     didOpen: (toast) => {
+                    //         toast.addEventListener('mouseenter', Swal.stopTimer)
+                    //         toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    //     }
+                    // });
 
-                    if (code == 1) {
-                        title = 'Driver installation succeeded';
-                        titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
-                        console.log(title);
-                        Toast.fire({
-                            icon: 'success',
-                            title: titleHTML,
-                            background: 'var(--main-background-color)'
-                        });
-                        markDriverCheckCompleted();
-                    } else {
-                        title = 'Driver installation failed or was stopped';
-                        titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
-                        console.log(title);
-                        Toast.fire({
-                            icon: 'warning',
-                            title: titleHTML,
-                            background: 'var(--main-background-color)'
-                        });
-                    }
+                    // if (code == 1) {
+                    //     title = 'Driver installation succeeded';
+                    //     titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
+                    //     console.log(title);
+                    //     Toast.fire({
+                    //         icon: 'success',
+                    //         title: titleHTML,
+                    //         background: 'var(--main-background-color)'
+                    //     });
+                    //     markDriverCheckCompleted();
+                    // } else {
+                    //     title = 'Driver installation failed or was stopped';
+                    //     titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
+                    //     console.log(title);
+                    //     Toast.fire({
+                    //         icon: 'warning',
+                    //         title: titleHTML,
+                    //         background: 'var(--main-background-color)'
+                    //     });
+                    // }
                 });
             } else if (result.isDenied) {
                 console.log('denied');
@@ -209,7 +217,6 @@ function validateDevice() {
 function validatePayload() {
     var valid = true;
 
-    const fs = require('fs')
     try {
         valid = (payloadPath != '') && (fs.existsSync(payloadPath));
     } catch (err) {
@@ -293,10 +300,7 @@ async function launchPayload() {
         return;
     }
 
-    const os = require('os');
     if (os.type() == 'Windows_NT') {
-        const path = require('path');
-        const { exec } = require('child_process');
         const smashProcess = exec('"' + path.join(__dirname, 'TegraRcmSmash.exe' + '" ' + payloadPath), function (error, stdout, stderr) { });
         smashProcess.on('exit', function (code) {
             if (code == 0) {
@@ -309,7 +313,6 @@ async function launchPayload() {
     }
 
     // Errors checked and accounted for.
-    const fs = require('fs');
     const payload = new Uint8Array(fs.readFileSync(payloadPath))
     //const payload = new Uint8Array(await readFileAsArrayBuffer(payloadFile));
     //const payload = new Uint8Array(await readFileAsArrayBuffer(p))
@@ -358,7 +361,6 @@ async function launchPayload() {
 }
 
 async function loadDevice() {
-    const USB = require("WEBUSB").usb;
     try {
         device = await USB.requestDevice({ filters: [{ vendorId: 0x0955 }] });
         updateSteps();
@@ -371,7 +373,6 @@ async function loadDevice() {
 
 async function selectPayload() {
     payloadPath = '';
-    const { ipcRenderer } = require('electron')
     ipcRenderer.send('show-open-dialog')
 
     ipcRenderer.on('fileSelected', (event, arg) => {
