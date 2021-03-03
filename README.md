@@ -3,4 +3,4 @@ A new, user friendly, multiplatform way to inject payloads into a Nintendo Switc
 
 ![Super Payload Launcher teaser image](.github/img/spl.jpg)
 
-Try out the beta release over at [the releases page](https://github.com/versionxcontrol/super-payload-launcher/) 🥳
+Try out the beta release over at [the releases page](https://github.com/versionxcontrol/super-payload-launcher/releases) 🥳
