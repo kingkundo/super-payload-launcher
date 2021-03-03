@@ -22,6 +22,7 @@ const createWindow = () => {
     const mainWindow = new BrowserWindow({
         width: width,
         height: height,
+        show: false,
         webPreferences: {
             nodeIntegration: true
         }
@@ -43,6 +44,10 @@ const createWindow = () => {
         event.preventDefault();
         shell.openExternal(url);
     });
+
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
+    })
 };
 
 ipcMain.on('show-open-dialog', (event, arg) => {

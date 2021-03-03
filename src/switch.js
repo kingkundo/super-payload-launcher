@@ -264,11 +264,14 @@ function updateSteps() {
     }
 
     if (validatePayload()) {
-        updateButton(payloadButton, true, payloadPath);
+        //updateButton(payloadButton, true, payloadPath);
+        payloadButton.innerHTML = '<div class="nouserselect">' + payloadPath + '</div>';
+
         deviceStatusDiv.innerHTML = '<div class="nouserselect">A switch in RCM mode has been found</div>';
         currentStep = 3;
     } else {
-        updateButton(payloadButton, false, 'Select a payload .bin file');
+        //updateButton(payloadButton, false, 'Select a payload .bin file');
+        payloadButton.innerHTML = '<div class="nouserselect">Select a payload .bin file</div>';
     }
 
     for (var i = 1; i < 4; i++) {
