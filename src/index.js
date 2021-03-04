@@ -178,10 +178,8 @@ ipcMain.on('selectPayload', (event) => {
 
 
 // Reset the whole process.
-
 function reset(event) {
     payloadPath = '';
-    event.sender.send('start_device_autosearch');
     event.sender.send('refreshGUI');
 }
 
@@ -221,15 +219,13 @@ ipcMain.on('validatePayload', (event) => {
 ipcMain.on('searchForDevice', async (event) => {
     device = await getDevice();
     event.sender.send('deviceStatusUpdate', device != null);
-    if (device != null) {
-        device.close();
-        device = null;
-    }
 });
 
 // Launch the payload.
 
 async function launchPayload(event) {
+    var device;
+    
     function onPayloadLaunchCompletion(success) {
         reset(event);
         event.sender.send('showSmashCompleteToast', success);
@@ -241,8 +237,21 @@ async function launchPayload(event) {
             console.log('Injecting the payload and smashing the stack failed.');
         }
     }
+
+    function loadPayloadOnWindows() {
+        const path = require('path');
+        const { exec } = require('child_process');
+        const smashProcess = exec('"' + path.join(__dirname, 'TegraRcmSmash.exe' + '" ' + payloadPath), function (error, stdout, stderr) { });
+        smashProcess.on('exit', function (code) {
+            if (code == 0) {
+                onPayloadLaunchCompletion(true);
+            } else {
+                onPayloadLaunchCompletion(false);
+            }
+        });
+    }
     
-    device = await getDevice(); 
+    device = await getDevice();
     if (device == null) {
         console.log('The selected device is null... Cannot launch payload.');
         return;
@@ -255,16 +264,7 @@ async function launchPayload(event) {
 
     const os = require('os');
     if (os.type() == 'Windows_NT') {
-        const path = require('path');
-        const { exec } = require('child_process');
-        const smashProcess = exec('"' + path.join(__dirname, 'TegraRcmSmash.exe' + '" ' + payloadPath), function (error, stdout, stderr) { });
-        smashProcess.on('exit', function (code) {
-            if (code == 0) {
-                onPayloadLaunchCompletion(true);
-            } else {
-                onPayloadLaunchCompletion(false);
-            }
-        });
+        loadPayloadOnWindows();
         return;
     }
 
@@ -308,12 +308,8 @@ async function launchPayload(event) {
     } catch (error) {
         success = error.message.includes('LIBUSB_TRANSFER_TIMED_OUT');
     }
-    
-    device.close().then(r => {
-        onPayloadLaunchCompletion(success);
-    }).catch(e => {
-        onPayloadLaunchCompletion(success);
-    });
+
+    onPayloadLaunchCompletion(success);
 }
 
 ipcMain.on('launchPayload', async (event) => {

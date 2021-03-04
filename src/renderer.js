@@ -13,11 +13,6 @@ window.addEventListener('load', function () {
 // The function that starts the device autosearch routine.
 function startDeviceAutosearch() {
     const interval = setInterval(function () {
-        // if (lastDeviceStatus) {
-        //     clearInterval(startDeviceAutosearch);
-        //     return;
-        // }
-
         ipcRenderer.send('searchForDevice');
     }, 1000);
 }
@@ -39,11 +34,6 @@ ipcRenderer.on('deviceStatusUpdate', (event, connected) => {
         refreshGUI();
     }
 })
-
-// If we are asked by main to start autosearch, we do.
-ipcRenderer.on('startDeviceAutosearch', (event) => {
-    startDeviceAutosearch();
-});
 
 // If we are asked by main to update the GUI, we do.
 ipcRenderer.on('refreshGUI', (event) => {
