@@ -238,12 +238,18 @@ ipcMain.on('searchForDevice', (event) => {
 // Launch the payload.
 
 async function launchPayload(event) {
-
-    function smashCompleteDialog(success) {
+    function onPayloadLaunchCompletion(success) {
         reset(event);
         event.sender.send('showSmashCompleteToast', success);
-    }
+        event.sender.send('updateSteps');
 
+        if (success) {
+            console.log('The stack has been smashed!');
+        } else {
+            console.log('Injecting the payload and smashing the stack failed.');
+        }
+    }
+    
     if (!validateDevice()) {
         console.log('The selected device is null... Cannot launch payload.');
         return;
@@ -261,9 +267,9 @@ async function launchPayload(event) {
         const smashProcess = exec('"' + path.join(__dirname, 'TegraRcmSmash.exe' + '" ' + payloadPath), function (error, stdout, stderr) { });
         smashProcess.on('exit', function (code) {
             if (code == 0) {
-                smashCompleteDialog(true);
+                onPayloadLaunchCompletion(true);
             } else {
-                smashCompleteDialog(false);
+                onPayloadLaunchCompletion(false);
             }
         });
         return;
@@ -272,18 +278,15 @@ async function launchPayload(event) {
     // Errors checked and accounted for.
     const fs = require('fs');
     const payload = new Uint8Array(fs.readFileSync(payloadPath))
-    //const payload = new Uint8Array(await readFileAsArrayBuffer(payloadFile));
-    //const payload = new Uint8Array(await readFileAsArrayBuffer(p))
-
     //payload = hekate;
+
+    device = null;
+    const USB = require("WEBUSB").usb;
+    device = await USB.requestDevice({ filters: [{ vendorId: 0x0955 }] });
 
     // Time to launch the payload on the selected device...
     await device.open();
     console.log(`Connected to ${device.manufacturerName} ${device.productName}`);
-
-    //if (device.configuration === null) {
-    //    await device.selectConfiguration(1);
-    //}
 
     await device.claimInterface(0);
 
@@ -302,6 +305,7 @@ async function launchPayload(event) {
     }
 
     console.log("Trigging vulnerability...");
+    var success = false;
     const vulnerabilityLength = 0x7000;
     try {
         const smash = await device.controlTransferIn({
@@ -311,11 +315,16 @@ async function launchPayload(event) {
             value: 0x00,
             index: 0x00
         }, vulnerabilityLength);
-        smashCompleteDialog(true);
+        success = true;
     } catch (error) {
-        console.log(error);
-        smashCompleteDialog(false);
+        success = error.message.includes('LIBUSB_TRANSFER_TIMED_OUT');
     }
+    
+    device.close().then(r => {
+        onPayloadLaunchCompletion(success);
+    }).catch(e => {
+        onPayloadLaunchCompletion(success);
+    });
 }
 
 ipcMain.on('launchPayload', async (event) => {
