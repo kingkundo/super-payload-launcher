@@ -4,7 +4,7 @@ const { app, ipcMain } = require('electron');
 //node_modules/.bin/electron-rebuild
 
 // Global developer mode toggle.
-var devMode = true;
+var devMode = false;
 
 // Other globals.
 const INTERMEZZO = new Uint8Array([
@@ -124,6 +124,13 @@ process.on("uncaughtException", (err) => {
 
 // Communication with the renderer.
 
+// Quit application.
+ipcMain.on('quitApplication', (event) => {
+    const { BrowserWindow } = require('electron');
+    const window = BrowserWindow.getFocusedWindow();
+    window.close();
+});
+
 // Get OS type.
 
 ipcMain.on('getOSType', (event) => {
@@ -199,7 +206,7 @@ ipcMain.on('selectPayload', (event) => {
 // Reset the whole process.
 function reset(event) {
     payloadPath = '';
-    event.sender.send('refreshGUI');
+    event.sender.send('setInitialised', false);
 }
 
 ipcMain.on('reset', (event) => {
@@ -252,9 +259,8 @@ async function launchPayload(event) {
     var device;
     
     function onPayloadLaunchCompletion(success) {
+        event.sender.send('showPayloadLaunchedPrompt', success);
         reset(event);
-        event.sender.send('showSmashCompleteToast', success);
-        event.sender.send('refreshGUI');
 
         if (success) {
             console.log('The stack has been smashed!');

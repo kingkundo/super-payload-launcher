@@ -2,8 +2,10 @@ const { ipcRenderer } = require('electron');
 
 var currentStep = 1;
 var lastDeviceStatus = false;
+var initialised = false;
 
 window.addEventListener('load', function () {
+    initialised = false;
     refreshGUI();
     ipcRenderer.send('searchForDevice');
     startDeviceAutosearch();
@@ -27,8 +29,12 @@ function launchPayload() {
     ipcRenderer.send('launchPayload');
 }
 
+ipcRenderer.on('setInitialised', (event, init) => {
+    initialised = init;
+    refreshGUI();
+});
+
 ipcRenderer.on('deviceStatusUpdate', (event, connected) => {
-    //console.log(connected);
     if (lastDeviceStatus != connected) {
         lastDeviceStatus = connected;
         refreshGUI();
@@ -38,6 +44,33 @@ ipcRenderer.on('deviceStatusUpdate', (event, connected) => {
 // If we are asked by main to update the GUI, we do.
 ipcRenderer.on('refreshGUI', (event) => {
     refreshGUI();
+})
+
+ipcRenderer.on('showPayloadLaunchedPrompt', (event, success) => {
+    const Swal = require('sweetalert2');
+
+    if (success) {
+        title = 'Payload delivered successfully! 💌';
+    } else {
+        title = 'Payload delivery to the Switch failed 🍐';
+    }
+
+    Swal.fire({
+        title: '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>',
+        //html: "<a class='nouserselect' style='color:var(--subtitle-text-color);'>On Windows you have to install a driver to talk to the Switch. If you haven't already, make sure to install it now. It's very simple.</a>",
+        icon: 'success',
+        background: 'var(--main-background-color)',
+        confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>Launch another payload</b></a>',
+        showConfirmButton: true,
+        showDenyButton: true,
+        denyButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">Quit application</a>',
+        showCancelButton: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+        } else if (result.isDenied) {
+            ipcRenderer.send('quitApplication');
+        }
+    });
 })
 
 ipcRenderer.on('showSmashCompleteToast', (event, success) => {
@@ -75,7 +108,6 @@ ipcRenderer.on('showSmashCompleteToast', (event, success) => {
     }
 });
 
-var initialised = false;
 function refreshGUI() {
     function updateButton(button, confirm, text = '') {
         if (confirm) {
