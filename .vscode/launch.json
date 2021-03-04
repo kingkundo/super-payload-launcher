@@ -8,6 +8,9 @@
             "name": "Debug Main Process",
             "type": "node",
             "request": "launch",
+            "env": {
+                "ELECTRON_ENABLE_LOGGING": "true"
+            },
             "cwd": "${workspaceFolder}",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
             "windows": {
