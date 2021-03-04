@@ -3,6 +3,7 @@ const { ipcRenderer } = require('electron');
 var currentStep = 1;
 
 window.addEventListener('load', function () {
+    updateSteps();
     ipcRenderer.send('searchForDevice');
     startDeviceAutosearch();
     doWindowsSwitchDriverPrompt();
