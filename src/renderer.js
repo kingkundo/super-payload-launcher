@@ -2,15 +2,11 @@ const { ipcRenderer } = require('electron');
 
 var currentStep = 1;
 
-// Select a payload.
-function selectPayload() {
-    ipcRenderer.send('selectPayload');
-}
-
-// Launches the payload on a button click.
-function launchPayload() {
-    ipcRenderer.send('launchPayload');
-}
+window.addEventListener('load', function () {
+    ipcRenderer.send('searchForDevice');
+    startDeviceAutosearch();
+    doWindowsSwitchDriverPrompt();
+});
 
 // The function that starts the device autosearch routine.
 function startDeviceAutosearch() {
@@ -22,6 +18,16 @@ function startDeviceAutosearch() {
 
         ipcRenderer.send('searchForDevice');
     }, 1000);
+}
+
+// Select a payload.
+function selectPayload() {
+    ipcRenderer.send('selectPayload');
+}
+
+// Launches the payload on a button click.
+function launchPayload() {
+    ipcRenderer.send('launchPayload');
 }
 
 // If we are asked by main to start autosearch, we do.
@@ -67,12 +73,6 @@ ipcRenderer.on('showSmashCompleteToast', (event, success) => {
             background: 'var(--main-background-color)'
         });
     }
-});
-
-window.addEventListener('load', function () {
-    ipcRenderer.send('searchForDevice');
-    startDeviceAutosearch();
-    doWindowsSwitchDriverPrompt();
 });
 
 function updateSteps() {

@@ -1,5 +1,8 @@
 const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 
+// For USB bindings issue:
+//node_modules/.bin/electron-rebuild
+
 // Global developer mode toggle.
 var devMode = true;
 
@@ -41,7 +44,7 @@ const createWindow = () => {
         backgroundColor: '#121212',
         show: false,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
             // nodeIntegration: false,
             // nodeIntegrationInWorker: false,
             // contextIsolation: true,
