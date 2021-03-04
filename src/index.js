@@ -28,6 +28,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const createWindow = () => {
+    const path = require('path');
     if (devMode) {
         var width = 960;
         var height = 650;
@@ -37,7 +38,6 @@ const createWindow = () => {
     }
 
     // Create the browser window.
-    const path = require('path');
     const { BrowserWindow } = require('electron');
     const mainWindow = new BrowserWindow({
         width: width,
@@ -135,6 +135,7 @@ ipcMain.on('setDriverCheckAsComplete', (event) => {
 });
 
 ipcMain.on('launchDriverInstaller', (event) => {
+    const path = require('path');
     const { exec } = require('child_process');
     const driverprocess = exec('"' + path.join(__dirname, '/apx_driver/InstallDriver.exe') + '"', function (error, stdout, stderr) {
         event.sender.send('getDriverInstallerLaunchCode', -1);

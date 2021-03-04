@@ -21,7 +21,7 @@ h1 {
   color: var(--title-text-color);
 }
 
-h3 {
+h2, h3 {
   color: var(--subtitle-text-color);
 }
 
