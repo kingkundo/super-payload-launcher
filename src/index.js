@@ -44,7 +44,7 @@ const createWindow = () => {
         backgroundColor: '#121212',
         show: false,
         webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: true
             // nodeIntegration: false,
             // nodeIntegrationInWorker: false,
             // contextIsolation: true,
