@@ -103,6 +103,25 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
+// Catch uncaught exceptions -- Due to NodeJS/webusb weirdness we
+// have to catch and throw away certain harmless errors.
+
+process.on("uncaughtException", (err) => {
+    if (err.message == "Can't close device with a pending request") {
+        return;
+    }
+
+    const messageBoxOptions = {
+         type: "error",
+         title: "NNNN Error in Main process",
+         message: "Something failed"
+     };
+     const { dialog } = require('electron');
+     dialog.showMessageBox(messageBoxOptions);
+     throw err;
+ });
+
+
 // Communication with the renderer.
 
 // Get OS type.
@@ -189,11 +208,18 @@ ipcMain.on('reset', (event) => {
 
 // Validate the connected Switch device.
 
+var disallowDeviceSearch = false;
 async function getDevice() {
+    if (disallowDeviceSearch) {
+        disallowDeviceSearch = false;
+        return null;
+    }
+
     const USB = require("WEBUSB").usb;
     try {
         return await USB.requestDevice({ filters: [{ vendorId: 0x0955 }] });
     } catch (error) { }
+
     return null;
 }
 
@@ -217,8 +243,7 @@ ipcMain.on('validatePayload', (event) => {
 // Search for a connected Nintendo Switch in RCM mode.
 
 ipcMain.on('searchForDevice', async (event) => {
-    device = await getDevice();
-    event.sender.send('deviceStatusUpdate', device != null);
+    event.sender.send('deviceStatusUpdate', (await getDevice() != null));
 });
 
 // Launch the payload.
@@ -243,11 +268,7 @@ async function launchPayload(event) {
         const { exec } = require('child_process');
         const smashProcess = exec('"' + path.join(__dirname, 'TegraRcmSmash.exe' + '" ' + payloadPath), function (error, stdout, stderr) { });
         smashProcess.on('exit', function (code) {
-            if (code == 0) {
-                onPayloadLaunchCompletion(true);
-            } else {
-                onPayloadLaunchCompletion(false);
-            }
+            onPayloadLaunchCompletion(code == 0);
         });
     }
     
@@ -261,6 +282,10 @@ async function launchPayload(event) {
         console.log('The selected payload path is invalid, or the payload is broken... Cannot launch payload.');
         return;
     }
+
+    // Bodge to prevent immediately detecting the switch
+    // the moment after payload injection.
+    disallowDeviceSearch = true;
 
     const os = require('os');
     if (os.type() == 'Windows_NT') {

@@ -100,19 +100,19 @@ function refreshGUI() {
 
     if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv, true);
-        deviceStatusDiv.innerHTML = 'A Switch in RCM mode has been found';
+        deviceStatusDiv.innerHTML = '<div class="nouserselect">A Switch in RCM mode has been found</div>';
         deviceProgressDiv.style.display = 'none';
         currentStep = 2;
     } else {
         updateButton(deviceStatusContainerDiv, false);
-        deviceStatusDiv.innerHTML = 'Now searching for a Switch in RCM mode';
+        deviceStatusDiv.innerHTML = '<div class="nouserselect">Now searching for a Switch in RCM mode</div>';
         deviceProgressDiv.style.display = 'inline';
     }
 
     payload = ((initialised) && (ipcRenderer.sendSync('validatePayload')));
     if (payload) {
-        updateButton(payloadButton, true, payload);
-        deviceStatusDiv.innerHTML = '<div class="nouserselect">A switch in RCM mode has been found</div>';
+        updateButton(payloadButton, true, payload.replace(/^.*[\\\/]/, ''));
+        deviceStatusDiv.innerHTML = '<div class="nouserselect">A Switch in RCM mode has been found</div>';
 
         // Only allow step 3 if Switch is connected.
         if (lastDeviceStatus) {
