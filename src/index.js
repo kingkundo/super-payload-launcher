@@ -20,7 +20,6 @@ const RCM_PAYLOAD_ADDRESS = 0x40010000;
 const INTERMEZZO_LOCATION = 0x4001F000;
 
 var payloadPath = '';
-var device = null;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -170,7 +169,7 @@ ipcMain.on('selectPayload', (event) => {
                 let paths = result.filePaths;
                 if (paths && paths.length > 0) {
                     payloadPath = paths[0];
-                    event.sender.send('updateSteps');
+                    event.sender.send('refreshGUI');
                 }
             }
         }
@@ -181,10 +180,9 @@ ipcMain.on('selectPayload', (event) => {
 // Reset the whole process.
 
 function reset(event) {
-    device = null;
     payloadPath = '';
     event.sender.send('start_device_autosearch');
-    event.sender.send('updateSteps');
+    event.sender.send('refreshGUI');
 }
 
 ipcMain.on('reset', (event) => {
@@ -193,13 +191,13 @@ ipcMain.on('reset', (event) => {
 
 // Validate the connected Switch device.
 
-function validateDevice() {
-    return device != null;
+async function getDevice() {
+    const USB = require("WEBUSB").usb;
+    try {
+        return await USB.requestDevice({ filters: [{ vendorId: 0x0955 }] });
+    } catch (error) { }
+    return null;
 }
-
-ipcMain.on('validateDevice', (event) => {
-    event.returnValue = validateDevice();
-});
 
 // Validate the selected payload.
 
@@ -220,19 +218,12 @@ ipcMain.on('validatePayload', (event) => {
 
 // Search for a connected Nintendo Switch in RCM mode.
 
-ipcMain.on('searchForDevice', (event) => {
-    const USB = require("WEBUSB").usb;
-    try {
-        USB.requestDevice({ filters: [{ vendorId: 0x0955 }] }).then(usbDevice => {
-            device = usbDevice;
-            event.sender.send('updateSteps');
-        }).catch(e => {
-            device = null;
-            event.sender.send('updateSteps');
-        });
-    } catch (error) {
+ipcMain.on('searchForDevice', async (event) => {
+    device = await getDevice();
+    event.sender.send('deviceStatusUpdate', device != null);
+    if (device != null) {
+        device.close();
         device = null;
-        event.sender.send('updateSteps');
     }
 });
 
@@ -242,7 +233,7 @@ async function launchPayload(event) {
     function onPayloadLaunchCompletion(success) {
         reset(event);
         event.sender.send('showSmashCompleteToast', success);
-        event.sender.send('updateSteps');
+        event.sender.send('refreshGUI');
 
         if (success) {
             console.log('The stack has been smashed!');
@@ -251,7 +242,8 @@ async function launchPayload(event) {
         }
     }
     
-    if (!validateDevice()) {
+    device = await getDevice(); 
+    if (device == null) {
         console.log('The selected device is null... Cannot launch payload.');
         return;
     }
@@ -281,10 +273,6 @@ async function launchPayload(event) {
     const payload = new Uint8Array(fs.readFileSync(payloadPath))
     //payload = hekate;
 
-    device = null;
-    const USB = require("WEBUSB").usb;
-    device = await USB.requestDevice({ filters: [{ vendorId: 0x0955 }] });
-
     // Time to launch the payload on the selected device...
     await device.open();
     console.log(`Connected to ${device.manufacturerName} ${device.productName}`);
@@ -297,7 +285,7 @@ async function launchPayload(event) {
     const finalRCMPayload = createRCMPayload(INTERMEZZO, payload);
     console.log('Sending payload...');
 
-    const writeCount = await write(finalRCMPayload);
+    const writeCount = await write(device, finalRCMPayload);
     console.log("Payload sent!");
 
     if (writeCount % 2 !== 1) {
@@ -341,7 +329,7 @@ function bufferToHex(data) {
     return result;
 }
 
-async function write(data) {
+async function write(device, data) {
     let length = data.length;
     let writeCount = 0;
     const packetSize = 0x1000;

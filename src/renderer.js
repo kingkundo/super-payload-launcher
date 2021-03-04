@@ -1,9 +1,10 @@
 const { ipcRenderer } = require('electron');
 
 var currentStep = 1;
+var lastDeviceStatus = false;
 
 window.addEventListener('load', function () {
-    updateSteps();
+    refreshGUI();
     ipcRenderer.send('searchForDevice');
     startDeviceAutosearch();
     doWindowsSwitchDriverPrompt();
@@ -12,10 +13,10 @@ window.addEventListener('load', function () {
 // The function that starts the device autosearch routine.
 function startDeviceAutosearch() {
     const interval = setInterval(function () {
-        if (ipcRenderer.sendSync('validateDevice')) {
-            clearInterval(startDeviceAutosearch);
-            return;
-        }
+        // if (lastDeviceStatus) {
+        //     clearInterval(startDeviceAutosearch);
+        //     return;
+        // }
 
         ipcRenderer.send('searchForDevice');
     }, 1000);
@@ -31,14 +32,22 @@ function launchPayload() {
     ipcRenderer.send('launchPayload');
 }
 
+ipcRenderer.on('deviceStatusUpdate', (event, connected) => {
+    //console.log(connected);
+    if (lastDeviceStatus != connected) {
+        lastDeviceStatus = connected;
+        refreshGUI();
+    }
+})
+
 // If we are asked by main to start autosearch, we do.
 ipcRenderer.on('startDeviceAutosearch', (event) => {
     startDeviceAutosearch();
 });
 
 // If we are asked by main to update the GUI, we do.
-ipcRenderer.on('updateSteps', (event) => {
-    updateSteps();
+ipcRenderer.on('refreshGUI', (event) => {
+    refreshGUI();
 })
 
 ipcRenderer.on('showSmashCompleteToast', (event, success) => {
@@ -77,7 +86,7 @@ ipcRenderer.on('showSmashCompleteToast', (event, success) => {
 });
 
 var initialised = false;
-function updateSteps() {
+function refreshGUI() {
     function updateButton(button, confirm, text = '') {
         if (confirm) {
             button.style.border = '0.1em solid  var(--device-found-color)';
@@ -99,7 +108,7 @@ function updateSteps() {
     var deviceProgressDiv = document.getElementById('devicestatusprogressdiv');
     var payloadButton = document.getElementById('payloadbutton');
 
-    if ((initialised) && (ipcRenderer.sendSync('validateDevice'))) {
+    if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv, true);
         deviceStatusDiv.innerHTML = 'A Switch in RCM mode has been found';
         deviceProgressDiv.style.display = 'none';
@@ -114,7 +123,11 @@ function updateSteps() {
     if (payload) {
         updateButton(payloadButton, true, payload);
         deviceStatusDiv.innerHTML = '<div class="nouserselect">A switch in RCM mode has been found</div>';
-        currentStep = 3;
+
+        // Only allow step 3 if Switch is connected.
+        if (lastDeviceStatus) {
+            currentStep = 3;
+        }
     } else {
         updateButton(payloadButton, false, 'Select a payload .bin file');
     }
@@ -137,14 +150,11 @@ function updateSteps() {
     }
 
     initialised = true;
+    //console.log('GUI refreshed!');
 }
 
 function doWindowsSwitchDriverPrompt() {
-    if (ipcRenderer.sendSync('hasDriverBeenChecked')) {
-        return;
-    }
-
-    if ((ipcRenderer.sendSync('getOSType') == 'Windows_NT') && (!ipcRenderer.sendSync('validateDevice'))) {
+    if ((ipcRenderer.sendSync('getOSType') == 'Windows_NT') && (!ipcRenderer.sendSync('hasDriverBeenChecked'))) {
         const Swal = require('sweetalert2');
         Swal.fire({
             title: '<a class="nouserselect" style="color:var(--title-text-color);">Have you installed the driver?</a>',
