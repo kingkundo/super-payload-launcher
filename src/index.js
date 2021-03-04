@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
+const { app, ipcMain } = require('electron');
 
 // For USB bindings issue:
 //node_modules/.bin/electron-rebuild
@@ -38,6 +38,7 @@ const createWindow = () => {
 
     // Create the browser window.
     const path = require('path');
+    const { BrowserWindow } = require('electron');
     const mainWindow = new BrowserWindow({
         width: width,
         height: height,
@@ -68,6 +69,7 @@ const createWindow = () => {
     // Redirect internal URLs to an external browser.
     mainWindow.webContents.on('new-window', function (event, url) {
         event.preventDefault();
+        const { shell } = require('electron');
         shell.openExternal(url);
     });
 
@@ -93,6 +95,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
+    const { BrowserWindow } = require('electron');
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
     }
@@ -147,6 +150,7 @@ ipcMain.on('launchDriverInstaller', (event) => {
 ipcMain.on('selectPayload', (event) => {
     payloadPath = '';
 
+    const { BrowserWindow } = require('electron');
     const window = BrowserWindow.getFocusedWindow();
     const options = {
         title: 'Select the payload file',
@@ -158,6 +162,7 @@ ipcMain.on('selectPayload', (event) => {
         //message: 'This message will only be shown on macOS'
     };
 
+    const { dialog } = require('electron');
     dialog.showOpenDialog(window, options).then(
         result => {
             if (!result.canceled) {
@@ -169,18 +174,13 @@ ipcMain.on('selectPayload', (event) => {
             }
         }
     );
-
-    event.sender.send('updateSteps');
 });
 
 
 // Reset the whole process.
 
 function reset(event) {
-    if (device != null) {
-        device.close();
-        device = null;
-    }
+    device = null;
     payloadPath = '';
     event.sender.send('start_device_autosearch');
     event.sender.send('updateSteps');

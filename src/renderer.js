@@ -76,6 +76,7 @@ ipcRenderer.on('showSmashCompleteToast', (event, success) => {
     }
 });
 
+var initialised = false;
 function updateSteps() {
     function updateButton(button, confirm, text = '') {
         if (confirm) {
@@ -96,10 +97,9 @@ function updateSteps() {
     var deviceStatusContainerDiv = document.getElementById('devicestatuscontainerdiv');
     var deviceStatusDiv = document.getElementById('devicestatusdiv');
     var deviceProgressDiv = document.getElementById('devicestatusprogressdiv');
-
     var payloadButton = document.getElementById('payloadbutton');
 
-    if (ipcRenderer.sendSync('validateDevice')) {
+    if ((initialised) && (ipcRenderer.sendSync('validateDevice'))) {
         updateButton(deviceStatusContainerDiv, true);
         deviceStatusDiv.innerHTML = 'A Switch in RCM mode has been found';
         deviceProgressDiv.style.display = 'none';
@@ -110,7 +110,7 @@ function updateSteps() {
         deviceProgressDiv.style.display = 'inline';
     }
 
-    payload = ipcRenderer.sendSync('validatePayload');
+    payload = ((initialised) && (ipcRenderer.sendSync('validatePayload')));
     if (payload) {
         updateButton(payloadButton, true, payload);
         deviceStatusDiv.innerHTML = '<div class="nouserselect">A switch in RCM mode has been found</div>';
@@ -135,6 +135,8 @@ function updateSteps() {
             currentInstructionDiv.style.pointerEvents = 'none';
         }
     }
+
+    initialised = true;
 }
 
 function doWindowsSwitchDriverPrompt() {
