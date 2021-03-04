@@ -238,39 +238,7 @@ async function launchPayload(event) {
 
     function smashCompleteDialog(success) {
         reset(event);
-    
-        const Swal = require('sweetalert2');
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-        });
-    
-        if (success) {
-            title = 'Payload delivered successfully! 💌';
-            titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
-            console.log(title);
-            Toast.fire({
-                icon: 'success',
-                title: titleHTML,
-                background: 'var(--main-background-color)'
-            });
-        } else {
-            title = 'Payload delivery to the Switch failed 🍐';
-            titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
-            console.log(title);
-            Toast.fire({
-                icon: 'error',
-                title: titleHTML,
-                background: 'var(--main-background-color)'
-            });
-        }
+        event.sender.send('showSmashCompleteToast', success);
     }
 
     if (!validateDevice()) {

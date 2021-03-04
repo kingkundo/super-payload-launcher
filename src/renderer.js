@@ -2,6 +2,16 @@ const { ipcRenderer } = require('electron');
 
 var currentStep = 1;
 
+// Select a payload.
+function selectPayload() {
+    ipcRenderer.send('selectPayload');
+}
+
+// Launches the payload on a button click.
+function launchPayload() {
+    ipcRenderer.send('launchPayload');
+}
+
 // The function that starts the device autosearch routine.
 function startDeviceAutosearch() {
     const interval = setInterval(function () {
@@ -23,6 +33,41 @@ ipcRenderer.on('startDeviceAutosearch', (event) => {
 ipcRenderer.on('updateSteps', (event) => {
     updateSteps();
 })
+
+ipcRenderer.on('showSmashCompleteToast', (event, success) => {
+    const Swal = require('sweetalert2');
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+
+    if (success) {
+        title = 'Payload delivered successfully! 💌';
+        titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
+        console.log(title);
+        Toast.fire({
+            icon: 'success',
+            title: titleHTML,
+            background: 'var(--main-background-color)'
+        });
+    } else {
+        title = 'Payload delivery to the Switch failed 🍐';
+        titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
+        console.log(title);
+        Toast.fire({
+            icon: 'error',
+            title: titleHTML,
+            background: 'var(--main-background-color)'
+        });
+    }
+});
 
 window.addEventListener('load', function () {
     ipcRenderer.send('searchForDevice');

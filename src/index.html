@@ -24,12 +24,12 @@
 
     <div class="instruction" id="i2">
         <h3 class="nouserselect">2. Select a payload to send across to your Nintendo Switch</h1>
-            <a id="payloadbutton" class="button1" onclick="window.electron.ipcRenderer.send('selectPayload');"></a>
+            <a id="payloadbutton" class="button1" onclick="selectPayload();"></a>
     </div>
 
     <div class="instruction" id="i3">
         <h3 class="nouserselect">3. Send the payload to the Nintendo Switch in RCM mode</h1>
-            <a class="button1" onclick="ipcRenderer.send('launchPayload');">
+            <a class="button1" onclick="launchPayload()">
                 <div class="nouserselect">Send the selected payload now</div>
             </a>
     </div>
