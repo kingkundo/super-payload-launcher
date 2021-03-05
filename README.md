@@ -46,8 +46,6 @@ node_modules/.bin/electron-rebuild
 
 ---
 
-<br />
-
 # License 📄
 
 This application is written and licensed under GPL-3.0. You are free to modify and distribute the code and application as you see fit. All that's required is a link back to the code here and give a credit to the application's author.
