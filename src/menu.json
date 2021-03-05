@@ -1,0 +1,37 @@
+[
+   {
+      "label": "Edit",
+      "submenu": [
+         {
+            "role": "quit"
+         }
+      ]
+   },
+   {
+      "label": "View",
+      "submenu": [
+         {
+            "role": "togglefullscreen"
+         }
+      ]
+   },
+   {
+      "role": "window",
+      "submenu": [
+         {
+            "role": "minimize"
+         },
+         {
+            "role": "close"
+         }
+      ]
+   },
+   {
+      "role": "help",
+      "submenu": [
+         {
+            "label": "Learn More"
+         }
+      ]
+   }
+]
