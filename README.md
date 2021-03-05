@@ -54,9 +54,9 @@ This application is written and licensed under GPL-3.0. You are free to modify a
 
 # Credits 👍
 
-- Kate Temkin (@ktemkin) for her amazing discovery of the initial Fusée Gelée exploit that all our Switch homebrew is enabled by.
-- Rajko Stojadinovic (rajkosto) for creating the TegraRcmSmash software that currently powers the Windows side of this application, until webusb sort their s**t out anyway 😛.
-- Michael (SciresM) who has been such a hero to the Switch homebrew/hacking community. We all use your software, bro.
+- Kate Temkin ([ktemkin](https://twitter.com/ktemkin)) for her amazing discovery of the initial Fusée Gelée exploit that all our Switch homebrew is enabled by.
+- Rajko Stojadinovic ([rajkosto](https://twitter.com/rajkosto)) for creating the TegraRcmSmash software that currently powers the Windows side of this application, until webusb sort their s**t out anyway 😛.
+- Michael ([SciresM](https://twitter.com/SciresM)) who has been such a hero to the Switch homebrew/hacking community. We all use your software, bro.
 
 ---
 
