@@ -20,7 +20,7 @@ Head to [the releases page](https://github.com/versionxcontrol/super-payload-lau
 # How to build the application (for developers) 🏗️
 This is an application built using [Electron](https://www.electronjs.org/). To get started make sure you've got NodeJS installed and up to date.
 
-Check out the repo to your machine, and open the folder in your command line of choice.
+Check out the repo to your machine, and open the project's folder in your command line of choice.
 
 ### Install dependencies:
 ```
