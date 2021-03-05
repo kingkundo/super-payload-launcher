@@ -52,9 +52,17 @@ This application is written and licensed under GPL-3.0. You are free to modify a
 
 ---
 
+# Credits 👍
+
+- Kate Temkin (@ktemkin) for her amazing discovery of the initial Fusée Gelée exploit that all our Switch homebrew is enabled by.
+- Rajko Stojadinovic (rajkosto) for creating the TegraRcmSmash software that currently powers the Windows side of this application, until webusb sort their s**t out anyway 😛.
+- Michael (SciresM) who has been such a hero to the Switch homebrew/hacking community. We all use your software, bro.
+
+---
+
 # Contact 📞
 
-If you appreciate this software, or have some feedback to give, please email me at versionxcontrol@gmail.com.
+If you appreciate this software, or have some feedback to give, please email me at versionxcontrol@gmail.com, or follow me [on Twitter @versionxcontrol](https://twitter.com/versionxcontrol).
 
 If you REALLY like the software, you can also buy me a coffee 🙏 
 </br></br><a href="https://www.buymeacoffee.com/versioncontrol" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
