@@ -1,8 +1,6 @@
 # Super Payload Launcher 🚀🎮
 A new, pretty, simple, and cross platform tool for injecting payloads onto your Switch to boot into Atmosphere, Hekate, Android etc!
 
-![Super Payload Launcher teaser image](.github/img/spl.jpg)
-
 ## Supported platforms 🖥️
 Super Payload Launcher will happily launch your payloads from **Windows**, **Mac OS** and **Linux**.
 
@@ -10,6 +8,12 @@ Super Payload Launcher will happily launch your payloads from **Windows**, **Mac
 
 ## Download instructions 📥
 Head to [the releases page](https://github.com/versionxcontrol/super-payload-launcher/releases) and grab the latest version for your operating system from there. The application does not require any install, just download and run the application from anywhere.
+
+---
+
+![Super Payload Launcher teaser image](.github/img/spl.jpg)
+
+---
 
 <br />
 
@@ -39,6 +43,10 @@ node_modules/.bin/electron-rebuild.bat
 ```
 node_modules/.bin/electron-rebuild
 ```
+
+<br />
+
+---
 
 <br />
 
