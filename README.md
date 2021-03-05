@@ -1,5 +1,5 @@
-# Super Payload Launcher 🚀🎮
-A new, pretty, simple, and cross platform tool for injecting payloads onto your Switch to boot into Atmosphere, Hekate, Android etc!
+# Super Payload Launcher (for Nintendo Switch) 🚀🎮
+A new, pretty, simple, and cross platform tool for injecting payloads onto your Nintendo Switch to boot into Atmosphere, Hekate, Android or other custom firmwares.
 
 ---
 
@@ -55,7 +55,7 @@ This application is written and licensed under GPL-3.0. You are free to modify a
 
 # Credits 👍
 
-- Kate Temkin ([ktemkin](https://twitter.com/ktemkin)) for her amazing discovery of the initial Fusée Gelée exploit that all our Switch homebrew is enabled by.
+- Kate Temkin ([ktemkin](https://twitter.com/ktemkin)) for her amazing discovery of the initial Fusée Gelée exploit that all our Nintendo Switch homebrew is enabled by.
 - Rajko Stojadinovic ([rajkosto](https://twitter.com/rajkosto)) for creating the TegraRcmSmash software that currently powers the Windows side of this application, until webusb sort their s**t out anyway 😛.
 - Michael ([SciresM](https://twitter.com/SciresM)) who has been such a hero to the Switch homebrew/hacking community. We all use your software, bro.
 
