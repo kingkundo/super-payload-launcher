@@ -57,4 +57,4 @@ This application is written and licensed under GPL-3.0. You are free to modify a
 If you appreciate this software, or have some feedback to give, please email me at versionxcontrol@gmail.com.
 
 If you REALLY like the software, you can also buy me a coffee 🙏 
-</br></br><a href="https://www.buymeacoffee.com/version_control" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+</br></br><a href="https://www.buymeacoffee.com/versioncontrol" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
