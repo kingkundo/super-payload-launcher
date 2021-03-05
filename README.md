@@ -1,6 +1,8 @@
 # Super Payload Launcher 🚀🎮
 A new, pretty, simple, and cross platform tool for injecting payloads onto your Switch to boot into Atmosphere, Hekate, Android etc!
 
+---
+
 ## Supported platforms 🖥️
 Super Payload Launcher will happily launch your payloads from **Windows**, **Mac OS** and **Linux**.
 
