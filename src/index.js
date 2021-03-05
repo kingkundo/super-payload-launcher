@@ -4,7 +4,7 @@ const { app, ipcMain } = require('electron');
 //node_modules/.bin/electron-rebuild
 
 // Global developer mode toggle.
-var devMode = false;
+var devMode = true;
 
 // Other globals.
 const INTERMEZZO = new Uint8Array([
