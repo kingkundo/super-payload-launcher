@@ -42,8 +42,6 @@ node_modules/.bin/electron-rebuild.bat
 node_modules/.bin/electron-rebuild
 ```
 
-<br />
-
 ---
 
 # License 📄
