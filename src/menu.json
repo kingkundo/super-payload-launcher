@@ -25,13 +25,5 @@
             "role": "close"
          }
       ]
-   },
-   {
-      "role": "help",
-      "submenu": [
-         {
-            "label": "Learn More"
-         }
-      ]
    }
 ]
