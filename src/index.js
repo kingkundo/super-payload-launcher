@@ -4,7 +4,7 @@ const { app, ipcMain } = require('electron');
 //node_modules/.bin/electron-rebuild
 
 // Global developer mode toggle.
-var devMode = true;
+var devMode = false;
 
 // Other globals.
 SWITCH_EXISTS_BADGE = ' ';
@@ -88,7 +88,7 @@ const createWindow = () => {
 app.on('ready', () => {
     const { Menu, MenuItem } = require('electron');
     const path = require('path');
-    var menuJson = require(path.join(__dirname, 'menu.json'));
+    var menuJson = require(path.join(__dirname, 'config', 'menu.json'));
     var menu = Menu.buildFromTemplate(menuJson);
 
     // Generate custom menu items...
@@ -198,13 +198,13 @@ ipcMain.on('launchDriverInstaller', (event) => {
 
 // Select a payload from a local file.
 
-ipcMain.on('selectPayload', (event) => {
+ipcMain.on('selectPayloadFromFileSystem', (event) => {
     payloadPath = '';
 
     const { BrowserWindow } = require('electron');
     const window = BrowserWindow.getFocusedWindow();
     const options = {
-        title: 'Select the payload file',
+        title: 'Choose a payload file',
         //defaultPath: '/path/to/something/',
         //buttonLabel: 'Do it',
         filters: [
@@ -247,6 +247,9 @@ ipcMain.on('reset', (event) => {
 
 var disallowDeviceSearch = false;
 async function getDevice() {
+    // TODO: REMOVE THIS!!!
+    //return true;
+    
     if (disallowDeviceSearch) {
         disallowDeviceSearch = false;
         return null;
@@ -313,7 +316,7 @@ async function launchPayload(event) {
     function loadPayloadOnWindows() {
         const path = require('path');
         const { exec } = require('child_process');
-        const smashProcess = exec('"' + path.join(__dirname, 'TegraRcmSmash.exe' + '" ' + payloadPath), function (error, stdout, stderr) { });
+        const smashProcess = exec('"' + path.join(__dirname, 'tegrasmash', 'TegraRcmSmash.exe' + '" ' + payloadPath), function (error, stdout, stderr) { });
         smashProcess.on('exit', function (code) {
             onPayloadLaunchCompletion(code == 0);
         });

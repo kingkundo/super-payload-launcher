@@ -20,8 +20,8 @@ function startDeviceAutosearch() {
 }
 
 // Select a payload.
-function selectPayload() {
-    ipcRenderer.send('selectPayload');
+function selectPayloadFromFileSystem() {
+    ipcRenderer.send('selectPayloadFromFileSystem');
 }
 
 // Launches the payload on a button click.
@@ -128,7 +128,7 @@ function refreshGUI() {
     var deviceStatusContainerDiv = document.getElementById('devicestatuscontainerdiv');
     var deviceStatusDiv = document.getElementById('devicestatusdiv');
     var deviceProgressDiv = document.getElementById('devicestatusprogressdiv');
-    var payloadButton = document.getElementById('payloadbutton');
+    var selectPayloadFromFileSystemBtn = document.getElementById('selectPayloadFromFileSystemBtn');
 
     if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv, true);
@@ -143,7 +143,7 @@ function refreshGUI() {
 
     payload = ((initialised) && (ipcRenderer.sendSync('validatePayload')));
     if (payload) {
-        updateButton(payloadButton, true, payload.replace(/^.*[\\\/]/, ''));
+        updateButton(selectPayloadFromFileSystemBtn, true, payload.replace(/^.*[\\\/]/, ''));
         deviceStatusDiv.innerHTML = '<div class="nouserselect">A Switch in RCM mode has been found</div>';
 
         // Only allow step 3 if Switch is connected.
@@ -151,7 +151,7 @@ function refreshGUI() {
             currentStep = 3;
         }
     } else {
-        updateButton(payloadButton, false, 'Select a payload .bin file');
+        updateButton(selectPayloadFromFileSystemBtn, false, 'Load a payload on your computer 🖥️');
     }
 
     for (var i = 1; i < 4; i++) {

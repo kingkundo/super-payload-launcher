@@ -12,13 +12,13 @@
 
     <div class="instruction" id="i1">
         <h3 class="nouserselect">1. Put your Nintendo Switch into RCM mode and plug it in</h3>
-        <p class="nouserselect">
+        <p class="nouserselect rcmdescription">
             Insert the RCM jig, plug your Switch into the computer and turn it all the way off.
             Then hold the power button while holding the volume up button. This may take some practice. You can
             use <a target="_blank" href="https://www.youtube.com/watch?v=d042IoBkJjI">this handy guide on
                 YouTube</a> for assistance.
         </p>
-        <p class="nouserselect">
+        <p class="nouserselect rcmdescription">
             <b>When it's plugged in and in RCM mode the app will automatically detect it.</b>
         </p>
         <a id="devicestatuscontainerdiv" class="displaybox nouserselect">
@@ -29,12 +29,12 @@
 
     <div class="instruction" id="i2">
         <h3 class="nouserselect">2. Select a payload</h3>
-        <a id="payloadbutton" class="button1" onclick="selectPayload();"></a>
+        <a id="selectPayloadFromFileSystemBtn" class="splbutton" onclick="selectPayloadFromFileSystem();"></a>
     </div>
 
     <div class="instruction" id="i3">
         <h3 class="nouserselect">3. Send the payload</h3>
-        <a class="button1" onclick="launchPayload()">
+        <a class="splbutton" onclick="launchPayload()">
             <div class="nouserselect">Send the selected payload now</div>
         </a>
     </div>

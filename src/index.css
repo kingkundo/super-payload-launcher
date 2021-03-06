@@ -29,6 +29,10 @@ p {
   color: var(--text-color);
 }
 
+.rcmdescription {
+  font-size: 0.875em;
+}
+
 .instruction {
   margin-top: 40px;
 }
@@ -66,7 +70,7 @@ a.displaybox{
   text-align: center;
 }
 
-a.button1{
+a.splbutton{
   display:inline-block;
   align-items: left;
   justify-content: space-between;
@@ -83,9 +87,8 @@ a.button1{
   transition: all 0.2s;
 }
 
-a.button1:hover{
-  color:#000000;
-  background-color:#FFFFFF;
+a.splbutton:hover{
+  background-color:#2c2c2c;
 }
 
 .noHover{
@@ -93,7 +96,7 @@ a.button1:hover{
 }
 
 @media all and (max-width:30em){
-  a.button1{
+  a.splbutton{
     display: block;
     margin: 0.4em auto;
   }
