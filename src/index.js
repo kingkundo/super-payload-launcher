@@ -7,6 +7,8 @@ const { app, ipcMain } = require('electron');
 var devMode = true;
 
 // Other globals.
+SWITCH_EXISTS_BADGE = ' ';
+
 const INTERMEZZO = new Uint8Array([
     0x44, 0x00, 0x9F, 0xE5, 0x01, 0x11, 0xA0, 0xE3, 0x40, 0x20, 0x9F, 0xE5, 0x00, 0x20, 0x42, 0xE0,
     0x08, 0x00, 0x00, 0xEB, 0x01, 0x01, 0xA0, 0xE3, 0x10, 0xFF, 0x2F, 0xE1, 0x00, 0x00, 0xA0, 0xE1,
@@ -54,8 +56,11 @@ const createWindow = () => {
         }
     });
 
-    // Remove the application menu.
-    mainWindow.removeMenu();
+    // Remove the application menu if not on MacOS.
+    const os = require('os');
+    if (os.type() != 'Darwin') {
+        mainWindow.removeMenu();
+    }
 
     // and load the index.html of the app.
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -80,15 +85,35 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+    const { Menu, MenuItem } = require('electron');
+    const path = require('path');
+    var menuJson = require(path.join(__dirname, 'menu.json'));
+    var menu = Menu.buildFromTemplate(menuJson);
+
+    // Generate custom menu items...
+    // NOTE: Not working!!
+    // menu.append(new MenuItem ({
+    //     role: 'help',
+    //     label: 'View documentation',
+    //     click() {
+    //         const { shell } = require('electron');
+    //         shell.openExternal('https://www.youtube.com/watch?v=d042IoBkJjI');
+    //     }
+    //  }));
+
+    Menu.setApplicationMenu(menu);
+
+    createWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
+    //if (process.platform !== 'darwin') {
         app.quit();
-    }
+    //}
 });
 
 app.on('activate', () => {
@@ -207,6 +232,11 @@ ipcMain.on('selectPayload', (event) => {
 function reset(event) {
     payloadPath = '';
     event.sender.send('setInitialised', false);
+
+    const os = require('os');
+    if (os.type() == 'Darwin') {
+        app.dock.setBadge('');
+    }
 }
 
 ipcMain.on('reset', (event) => {
@@ -250,7 +280,18 @@ ipcMain.on('validatePayload', (event) => {
 // Search for a connected Nintendo Switch in RCM mode.
 
 ipcMain.on('searchForDevice', async (event) => {
-    event.sender.send('deviceStatusUpdate', (await getDevice() != null));
+    var result = await getDevice() != null;
+
+    const os = require('os');
+    if (os.type() == 'Darwin') {
+        if (result) {
+            app.dock.setBadge(SWITCH_EXISTS_BADGE);
+        } else {
+            app.dock.setBadge('');
+        }
+    }
+
+    event.sender.send('deviceStatusUpdate', result);
 });
 
 // Launch the payload.
