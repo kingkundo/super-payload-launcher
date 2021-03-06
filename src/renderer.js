@@ -151,7 +151,7 @@ function refreshGUI() {
             currentStep = 3;
         }
     } else {
-        updateButton(selectPayloadFromFileSystemBtn, false, 'Load a payload on your computer 🖥️');
+        updateButton(selectPayloadFromFileSystemBtn, false, 'Open a downloaded payload 🖥️');
     }
 
     for (var i = 1; i < 4; i++) {
