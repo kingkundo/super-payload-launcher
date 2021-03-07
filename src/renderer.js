@@ -6,11 +6,37 @@ var initialised = false;
 
 window.addEventListener('load', function () {
     initialised = false;
+    writeTranslatedText();
     refreshGUI();
     ipcRenderer.send('searchForDevice');
     startDeviceAutosearch();
     doWindowsSwitchDriverPrompt();
 });
+
+function writeTranslatedText(){
+    function updateInnerHTML(elementId, key) {
+        document.getElementById(elementId).innerHTML = getLocaleString(key);
+    }
+
+    appTitle = getLocaleString('app_title');
+    document.title = appTitle;
+    document.getElementById('title').innerHTML = appTitle;
+
+    updateInnerHTML('step_one_title', 'step_one_title');
+    updateInnerHTML('step_one_desc', 'step_one_desc');
+    updateInnerHTML('step_one_secondary_desc', 'step_one_sec_desc');
+    updateInnerHTML('step_two_title', 'step_two_title');
+    updateInnerHTML('launch_payload_button', 'launch_payload_button');
+
+}
+
+function getLocaleString(key) {
+    return ipcRenderer.sendSync('toLocaleString', key);
+}
+
+function writeLocaleString(key) {
+    document.write(getLocaleString(key));
+}
 
 // The function that starts the device autosearch routine.
 function startDeviceAutosearch() {
@@ -50,20 +76,19 @@ ipcRenderer.on('showPayloadLaunchedPrompt', (event, success) => {
     const Swal = require('sweetalert2');
 
     if (success) {
-        title = 'Payload delivered successfully! 💌';
+        title = getLocaleString('payload_delivery_success');
     } else {
-        title = 'Payload delivery to the Switch failed 🍐';
+        title = getLocaleString('payload_delivery_failed');
     }
 
     Swal.fire({
         title: '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>',
-        //html: "<a class='nouserselect' style='color:var(--subtitle-text-color);'>On Windows you have to install a driver to talk to the Switch. If you haven't already, make sure to install it now. It's very simple.</a>",
         icon: 'success',
         background: 'var(--main-background-color)',
-        confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>Launch another payload</b></a>',
+        confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>' + getLocaleString("launch_another_payload") + '</b></a>',
         showConfirmButton: true,
         showDenyButton: true,
-        denyButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">Quit application</a>',
+        denyButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">' + getLocaleString("quit_application") + '</a>',
         showCancelButton: false,
     }).then((result) => {
         if (result.isConfirmed) {
@@ -71,41 +96,6 @@ ipcRenderer.on('showPayloadLaunchedPrompt', (event, success) => {
             ipcRenderer.send('quitApplication');
         }
     });
-})
-
-ipcRenderer.on('showSmashCompleteToast', (event, success) => {
-    const Swal = require('sweetalert2');
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    });
-
-    if (success) {
-        title = 'Payload delivered successfully';
-        titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
-        console.log(title);
-        Toast.fire({
-            icon: 'success',
-            title: titleHTML,
-            background: 'var(--main-background-color)'
-        });
-    } else {
-        title = 'Payload delivery failed';
-        titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
-        console.log(title);
-        Toast.fire({
-            icon: 'error',
-            title: titleHTML,
-            background: 'var(--main-background-color)'
-        });
-    }
 });
 
 function refreshGUI() {
@@ -132,26 +122,28 @@ function refreshGUI() {
 
     if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv, true);
-        deviceStatusDiv.innerHTML = '<div class="nouserselect">A Switch in RCM mode has been found</div>';
+        deviceStatusDiv.innerHTML = '<div class="nouserselect">' + getLocaleString("switch_found") + '</div>';
         deviceProgressDiv.style.display = 'none';
         currentStep = 2;
     } else {
         updateButton(deviceStatusContainerDiv, false);
-        deviceStatusDiv.innerHTML = '<div class="nouserselect">Now searching for a Switch in RCM mode</div>';
+        deviceStatusDiv.innerHTML = '<div class="nouserselect">' + getLocaleString("searching_for_switch") + '</div>';
         deviceProgressDiv.style.display = 'inline';
     }
 
     payload = ((initialised) && (ipcRenderer.sendSync('validatePayload')));
     if (payload) {
         updateButton(selectPayloadFromFileSystemBtn, true, payload.replace(/^.*[\\\/]/, ''));
-        deviceStatusDiv.innerHTML = '<div class="nouserselect">A Switch in RCM mode has been found</div>';
+        
+        // TODO: WHAT DID THIS DO? LOOKS POINTLESS AND WRONG SO COMMENTED OUT...
+        //deviceStatusDiv.innerHTML = '<div class="nouserselect">A Switch in RCM mode has been found</div>';
 
         // Only allow step 3 if Switch is connected.
         if (lastDeviceStatus) {
             currentStep = 3;
         }
     } else {
-        updateButton(selectPayloadFromFileSystemBtn, false, 'Open a downloaded payload');
+        updateButton(selectPayloadFromFileSystemBtn, false, getLocaleString('open_local_payload'));
     }
 
     for (var i = 1; i < 4; i++) {
@@ -179,13 +171,13 @@ function doWindowsSwitchDriverPrompt() {
     if ((ipcRenderer.sendSync('getOSType') == 'Windows_NT') && (!ipcRenderer.sendSync('hasDriverBeenChecked'))) {
         const Swal = require('sweetalert2');
         Swal.fire({
-            title: '<a class="nouserselect" style="color:var(--title-text-color);">Have you installed the driver?</a>',
-            html: "<a class='nouserselect' style='color:var(--subtitle-text-color);'>On Windows you have to install a driver to talk to the Switch. If you haven't already, make sure to install it now. It's very simple.</a>",
+            title: '<a class="nouserselect" style="color:var(--title-text-color);">' + getLocaleString("driver_dialog_title") + '</a>',
+            html: "<a class='nouserselect' style='color:var(--subtitle-text-color);'>" + getLocaleString('driver_dialog_msg') + "</a>",
             //icon: 'error',
             background: 'var(--main-background-color)',
-            confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>Install driver</b></a>',
+            confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>' + getLocaleString('install_driver') + '</b></a>',
             showConfirmButton: true,
-            denyButtonText: "<a class='nouserselect' style='color:var(--text-color);'>It's already installed</a>",
+            denyButtonText: "<a class='nouserselect' style='color:var(--text-color);'>" + getLocaleString('driver_already_installed') + "</a>",
             showDenyButton: true,
             showCancelButton: false
         }).then((result) => {

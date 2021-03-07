@@ -1,0 +1,22 @@
+{
+    "app_title": "Super Payload Launcher 🚀🎮",
+    "step_one_title": "1. Put your Nintendo Switch into RCM mode and plug it in",
+    "step_one_desc": "Insert the RCM jig, plug your Switch into the computer and turn it all the way off. Then hold the power button while holding the volume up button. This may take some practice. You can use <a target='_blank' href='https://www.youtube.com/watch?v=d042IoBkJjI'>this handy guide on YouTube</a> for assistance.",
+    "step_one_sec_desc": "<b>When it's plugged in and in RCM mode the app will automatically detect it.</b>",
+    "step_two_title": "2. Select a payload",
+    "step_three_title": "3. Send the payload",
+    "launch_payload_button": "Send the selected payload now",
+    "payload_delivery_success": "Payload delivered successfully",
+    "payload_delivery_failed": "Payload delivery failed",
+    "launch_another_payload": "Launch another payload",
+    "quit_application": "Quit application",
+    "switch_found": "A Switch in RCM mode has been found",
+    "searching_for_switch": "Now searching for a Switch in RCM mode",
+    "open_local_payload": "Open a downloaded payload",
+    "driver_dialog_title": "Have you installed the driver?",
+    "driver_dialog_msg": "On Windows you have to install a driver to talk to the Switch. If you haven't already, make sure to install it now. It's very simple.",
+    "install_driver": "Install driver",
+    "driver_already_installed": "It's already installed",
+    "select_payload_file": "Choose a payload file",
+    "payload_file": "Payload file"
+}
