@@ -88,7 +88,7 @@ ipcRenderer.on('showSmashCompleteToast', (event, success) => {
     });
 
     if (success) {
-        title = 'Payload delivered successfully! 💌';
+        title = 'Payload delivered successfully';
         titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
         console.log(title);
         Toast.fire({
@@ -97,7 +97,7 @@ ipcRenderer.on('showSmashCompleteToast', (event, success) => {
             background: 'var(--main-background-color)'
         });
     } else {
-        title = 'Payload delivery to the Switch failed 🍐';
+        title = 'Payload delivery failed';
         titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
         console.log(title);
         Toast.fire({
@@ -151,7 +151,7 @@ function refreshGUI() {
             currentStep = 3;
         }
     } else {
-        updateButton(selectPayloadFromFileSystemBtn, false, 'Open a downloaded payload 🖥️');
+        updateButton(selectPayloadFromFileSystemBtn, false, 'Open a downloaded payload');
     }
 
     for (var i = 1; i < 4; i++) {
