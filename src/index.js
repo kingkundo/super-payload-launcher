@@ -4,7 +4,7 @@ const { app, ipcMain } = require('electron');
 //node_modules/.bin/electron-rebuild
 
 // Global developer mode toggle.
-var devMode = true;
+var devMode = false;
 
 // Other globals.
 SWITCH_EXISTS_BADGE = ' ';
@@ -94,24 +94,18 @@ function initialiseLocalisation() {
     const path = require('path');
     const i18next = require('i18next');
     const Backend = require('i18next-fs-backend');
-
-    var currentLocale = 'en';
-
     i18next
         .use(Backend)
         .init({
             // debug: true,
             initImmediate: false,
             fallbackLng: 'en',
-            lng: currentLocale,
-            //ns: 'backend-app',
-            //defaultNS: 'backend-app',
+            lng: app.getLocale(),
             backend: {
-                loadPath: path.join(__dirname, 'locales', currentLocale + '.json')
+                loadPath: path.join(__dirname, 'locales', '{{lng}}.json')
             }
         });
 }
-
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -225,7 +219,7 @@ ipcMain.on('selectPayloadFromFileSystem', (event) => {
         filters: [
             { name: getLocaleString('payload_file'), extensions: ['bin'] }
         ],
-        //message: 'This message will only be shown on macOS'
+        message: getLocaleString('select_payload_file')
     };
 
     const { dialog } = require('electron');
@@ -241,7 +235,6 @@ ipcMain.on('selectPayloadFromFileSystem', (event) => {
         }
     );
 });
-
 
 // Reset the whole process.
 function reset(event) {
