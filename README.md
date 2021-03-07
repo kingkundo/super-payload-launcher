@@ -64,7 +64,7 @@ This application is written and licensed under GPL-3.0. You are free to modify a
 # Contribute 🎁
 
 Super Payload Launcher now supports translations for different locales! If you can speak a language other than English, please
-consider translating **en.json** under the **locales** folder to your language of choice.
+consider translating **en.json** under the **src/locales** folder to your language of choice.
 
 ---
 
