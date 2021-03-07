@@ -35,23 +35,23 @@ function startDeviceAutosearch() {
     }, 1000);
 }
 
-window.spl.receive('setInitialised', (event, init) => {
+window.spl.on('setInitialised', (event, init) => {
     initialised = init;
     refreshGUI();
 });
 
-window.spl.receive('deviceStatusUpdate', (event, connected) => {
+window.spl.on('deviceStatusUpdate', (event, connected) => {
     if (lastDeviceStatus != connected) {
         lastDeviceStatus = connected;
         refreshGUI();
     }
 });
 
-window.spl.receive('refreshGUI', (event) => {
+window.spl.on('refreshGUI', (event) => {
     refreshGUI();
 })
 
-window.spl.receive('showPayloadLaunchedPrompt', (event, success) => {
+window.spl.on('showPayloadLaunchedPrompt', (event, success) => {
     if (success) {
         title = window.spl.getLocaleString('payload_delivery_success');
     } else {
@@ -158,7 +158,7 @@ function doWindowsSwitchDriverPrompt() {
         }).then((result) => {
             if (result.isConfirmed) {
                 window.spl.launchDriverInstaller();
-                window.spl.receive('getDriverInstallerLaunchCode', (event, code) => {
+                window.spl.on('getDriverInstallerLaunchCode', (event, code) => {
                     window.spl.setDriverCheckAsComplete();
                     console.log('Driver installer exit code:' + code);
                 });

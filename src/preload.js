@@ -18,13 +18,6 @@ contextBridge.exposeInMainWorld(
         launchPayload: () => {
             ipcRenderer.send('launchPayload');
         },
-        receive: (channel, func) => {
-            let validChannels = ['setInitialised', 'deviceStatusUpdate', 'refreshGUI', 
-                                'showPayloadLaunchedPrompt', 'getDriverInstallerLaunchCode'];
-            if (validChannels.includes(channel)) {
-                ipcRenderer.on(channel, (event, ...args) => func(event, ...args));
-            }
-        },
         getOSType: () => {
             return ipcRenderer.sendSync('getOSType');
         },
@@ -39,6 +32,14 @@ contextBridge.exposeInMainWorld(
         },
         quitApplication: () => {
             ipcRenderer.send('quitApplication');
-        }
+        },
+        // Event listeners...
+        on: (channel, func) => {
+            let validChannels = ['setInitialised', 'deviceStatusUpdate', 'refreshGUI', 
+                                'showPayloadLaunchedPrompt', 'getDriverInstallerLaunchCode'];
+            if (validChannels.includes(channel)) {
+                ipcRenderer.on(channel, (event, ...args) => func(event, ...args));
+            }
+        },
     }
 );
