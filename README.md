@@ -70,7 +70,7 @@ consider translating **en.json** under the **src/locales** folder to your langua
 
 # Contact 📞
 
-If you appreciate this software, or have some feedback to give, please email me at versionxcontrol@gmail.com, or follow me [on Twitter @versionxcontrol](https://twitter.com/versionxcontrol).
+If you appreciate this software, or have some feedback to give, please email me at versionxcontrol@gmail.com, or follow/DM me [on Twitter @versionxcontrol](https://twitter.com/versionxcontrol).
 
 If you REALLY like the software, you can also buy me a coffee 🙏 
 </br></br><a href="https://www.buymeacoffee.com/versioncontrol" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
