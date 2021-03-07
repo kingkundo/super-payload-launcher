@@ -82,28 +82,37 @@ const createWindow = () => {
     })
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', () => {
+function createMenu() {
     const { Menu, MenuItem } = require('electron');
     const path = require('path');
     var menuJson = require(path.join(__dirname, 'config', 'menu.json'));
     var menu = Menu.buildFromTemplate(menuJson);
-
-    // Generate custom menu items...
-    // NOTE: Not working!!
-    // menu.append(new MenuItem ({
-    //     role: 'help',
-    //     label: 'View documentation',
-    //     click() {
-    //         const { shell } = require('electron');
-    //         shell.openExternal('https://www.youtube.com/watch?v=d042IoBkJjI');
-    //     }
-    //  }));
-
     Menu.setApplicationMenu(menu);
+}
 
+function initialiseLocalisation() {
+    const path = require('path');
+    const i18next = require('i18next');
+    const Backend = require('i18next-fs-backend');
+    i18next
+        .use(Backend)
+        .init({
+            // debug: true,
+            initImmediate: false,
+            fallbackLng: 'en',
+            lng: app.getLocale(),
+            backend: {
+                loadPath: path.join(__dirname, 'locales', '{{lng}}.json')
+            }
+        });
+}
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', () => {
+    createMenu();
+    initialiseLocalisation();
     createWindow();
 });
 
@@ -112,7 +121,7 @@ app.on('ready', () => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
     //if (process.platform !== 'darwin') {
-        app.quit();
+    app.quit();
     //}
 });
 
@@ -137,14 +146,14 @@ process.on("uncaughtException", (err) => {
     }
 
     const messageBoxOptions = {
-         type: "error",
-         title: "NNNN Error in Main process",
-         message: "Something failed"
-     };
-     const { dialog } = require('electron');
-     dialog.showMessageBox(messageBoxOptions);
-     throw err;
- });
+        type: "error",
+        title: "Error in Main process",
+        message: "Something failed"
+    };
+    const { dialog } = require('electron');
+    dialog.showMessageBox(messageBoxOptions);
+    throw err;
+});
 
 
 // Communication with the renderer.
@@ -194,7 +203,7 @@ ipcMain.on('launchDriverInstaller', (event) => {
         event.sender.send('getDriverInstallerLaunchCode', code);
     });
 });
-    
+
 
 // Select a payload from a local file.
 
@@ -204,13 +213,13 @@ ipcMain.on('selectPayloadFromFileSystem', (event) => {
     const { BrowserWindow } = require('electron');
     const window = BrowserWindow.getFocusedWindow();
     const options = {
-        title: 'Choose a payload file',
+        title: getLocaleString('select_payload_file'),
         //defaultPath: '/path/to/something/',
         //buttonLabel: 'Do it',
         filters: [
-            { name: 'Payload file', extensions: ['bin'] }
+            { name: getLocaleString('payload_file'), extensions: ['bin'] }
         ],
-        //message: 'This message will only be shown on macOS'
+        message: getLocaleString('select_payload_file')
     };
 
     const { dialog } = require('electron');
@@ -226,7 +235,6 @@ ipcMain.on('selectPayloadFromFileSystem', (event) => {
         }
     );
 });
-
 
 // Reset the whole process.
 function reset(event) {
@@ -249,7 +257,7 @@ var disallowDeviceSearch = false;
 async function getDevice() {
     // TODO: REMOVE THIS!!!
     //return true;
-    
+
     if (disallowDeviceSearch) {
         disallowDeviceSearch = false;
         return null;
@@ -280,6 +288,10 @@ ipcMain.on('validatePayload', (event) => {
     event.returnValue = validatePayload();
 });
 
+ipcMain.on('toLocaleString', (event, key) => {
+    event.returnValue = getLocaleString(key);
+})
+
 // Search for a connected Nintendo Switch in RCM mode.
 
 ipcMain.on('searchForDevice', async (event) => {
@@ -301,7 +313,7 @@ ipcMain.on('searchForDevice', async (event) => {
 
 async function launchPayload(event) {
     var device;
-    
+
     function onPayloadLaunchCompletion(success) {
         event.sender.send('showPayloadLaunchedPrompt', success);
         reset(event);
@@ -321,7 +333,7 @@ async function launchPayload(event) {
             onPayloadLaunchCompletion(code == 0);
         });
     }
-    
+
     device = await getDevice();
     if (device == null) {
         console.log('The selected device is null... Cannot launch payload.');
@@ -349,23 +361,29 @@ async function launchPayload(event) {
     //payload = hekate;
 
     // Time to launch the payload on the selected device...
-    await device.open();
-    console.log(`Connected to ${device.manufacturerName} ${device.productName}`);
+    try {
+        await device.open();
+        console.log(`Connected to ${device.manufacturerName} ${device.productName}`);
 
-    await device.claimInterface(0);
+        await device.claimInterface(0);
 
-    const deviceID = await device.transferIn(1, 16);
-    console.log(`Device ID: ${bufferToHex(deviceID.data)}`);
+        const deviceID = await device.transferIn(1, 16);
+        console.log(`Device ID: ${bufferToHex(deviceID.data)}`);
 
-    const finalRCMPayload = createRCMPayload(INTERMEZZO, payload);
-    console.log('Sending payload...');
+        const finalRCMPayload = createRCMPayload(INTERMEZZO, payload);
+        console.log('Sending payload...');
 
-    const writeCount = await write(device, finalRCMPayload);
-    console.log("Payload sent!");
+        const writeCount = await write(device, finalRCMPayload);
+        console.log("Payload sent!");
 
-    if (writeCount % 2 !== 1) {
-        console.log("Switching to higher buffer...");
-        await device.transferOut(1, new ArrayBuffer(0x1000));
+        if (writeCount % 2 !== 1) {
+            console.log("Switching to higher buffer...");
+            await device.transferOut(1, new ArrayBuffer(0x1000));
+        }
+    } catch (error) {
+        console.log('There was an error accessing the device.');
+        onPayloadLaunchCompletion(false);
+        return;
     }
 
     console.log("Trigging vulnerability...");
@@ -392,6 +410,11 @@ ipcMain.on('launchPayload', async (event) => {
 });
 
 // Simple helpers.
+
+function getLocaleString(key) {
+    var i18next = require('i18next');
+    return i18next.t(key);
+}
 
 function bufferToHex(data) {
     let result = "";

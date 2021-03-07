@@ -51,6 +51,8 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
+    "i18next": "^19.9.1",
+    "i18next-fs-backend": "^1.1.0",
     "sweetalert2": "^10.15.5",
     "webusb": "^2.2.0"
   },
