@@ -83,7 +83,7 @@ const createWindow = () => {
 };
 
 function createMenu() {
-    const { Menu, MenuItem } = require('electron');
+    const { Menu/*, MenuItem*/ } = require('electron');
     const path = require('path');
     var menuJson = require(path.join(__dirname, 'config', 'menu.json'));
     var menu = Menu.buildFromTemplate(menuJson);
