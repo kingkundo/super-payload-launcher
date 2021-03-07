@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Super Payload Launcher 🚀🎮</title>
+    <script src="sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -22,12 +23,12 @@
 
     <div class="instruction" id="i2">
         <h3 id="step_two_title" class="nouserselect"></h3>
-        <a id="selectPayloadFromFileSystemBtn" class="splbutton" onclick="selectPayloadFromFileSystem();"></a>
+        <a id="selectPayloadFromFileSystemBtn" class="splbutton" onclick="window.spl.selectPayloadFromFileSystem();"></a>
     </div>
 
     <div class="instruction" id="i3">
-        <h3 class="nouserselect">3. Send the payload</h3>
-        <a class="splbutton" onclick="launchPayload()">
+        <h3 id="step_three_title" class="nouserselect"></h3>
+        <a class="splbutton" onclick="window.spl.launchPayload();">
             <div id="launch_payload_button" class="nouserselect"></div>
         </a>
     </div>

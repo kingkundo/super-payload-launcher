@@ -1,5 +1,3 @@
-const { ipcRenderer } = require('electron');
-
 var currentStep = 1;
 var lastDeviceStatus = false;
 var initialised = false;
@@ -8,92 +6,71 @@ window.addEventListener('load', function () {
     initialised = false;
     writeTranslatedText();
     refreshGUI();
-    ipcRenderer.send('searchForDevice');
+    window.spl.searchForDevice();
     startDeviceAutosearch();
     doWindowsSwitchDriverPrompt();
 });
 
 function writeTranslatedText(){
-    function updateInnerHTML(elementId, key) {
-        document.getElementById(elementId).innerHTML = getLocaleString(key);
+    function updateInnerHTML(elementId, key, innertag = '', outertag = '') {
+        document.getElementById(elementId).innerHTML = innertag + window.spl.getLocaleString(key) + outertag;
     }
 
-    appTitle = getLocaleString('app_title');
+    appTitle = window.spl.getLocaleString('app_title');
     document.title = appTitle;
     document.getElementById('title').innerHTML = appTitle;
 
     updateInnerHTML('step_one_title', 'step_one_title');
     updateInnerHTML('step_one_desc', 'step_one_desc');
-    updateInnerHTML('step_one_secondary_desc', 'step_one_sec_desc');
+    updateInnerHTML('step_one_secondary_desc', 'step_one_sec_desc', '<b>', '</b>');
     updateInnerHTML('step_two_title', 'step_two_title');
+    updateInnerHTML('step_three_title', 'step_three_title');
     updateInnerHTML('launch_payload_button', 'launch_payload_button');
 
 }
 
-function getLocaleString(key) {
-    return ipcRenderer.sendSync('toLocaleString', key);
-}
-
-function writeLocaleString(key) {
-    document.write(getLocaleString(key));
-}
-
-// The function that starts the device autosearch routine.
 function startDeviceAutosearch() {
     const interval = setInterval(function () {
-        ipcRenderer.send('searchForDevice');
+        window.spl.searchForDevice();
     }, 1000);
 }
 
-// Select a payload.
-function selectPayloadFromFileSystem() {
-    ipcRenderer.send('selectPayloadFromFileSystem');
-}
-
-// Launches the payload on a button click.
-function launchPayload() {
-    ipcRenderer.send('launchPayload');
-}
-
-ipcRenderer.on('setInitialised', (event, init) => {
+window.spl.receive('setInitialised', (event, init) => {
     initialised = init;
     refreshGUI();
 });
 
-ipcRenderer.on('deviceStatusUpdate', (event, connected) => {
+window.spl.receive('deviceStatusUpdate', (event, connected) => {
     if (lastDeviceStatus != connected) {
         lastDeviceStatus = connected;
         refreshGUI();
     }
-})
+});
 
-// If we are asked by main to update the GUI, we do.
-ipcRenderer.on('refreshGUI', (event) => {
+window.spl.receive('refreshGUI', (event) => {
     refreshGUI();
 })
 
-ipcRenderer.on('showPayloadLaunchedPrompt', (event, success) => {
-    const Swal = require('sweetalert2');
-
+window.spl.receive('showPayloadLaunchedPrompt', (event, success) => {
     if (success) {
-        title = getLocaleString('payload_delivery_success');
+        title = window.spl.getLocaleString('payload_delivery_success');
     } else {
-        title = getLocaleString('payload_delivery_failed');
+        title = window.spl.getLocaleString('payload_delivery_failed');
     }
 
     Swal.fire({
         title: '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>',
         icon: 'success',
         background: 'var(--main-background-color)',
-        confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>' + getLocaleString("launch_another_payload") + '</b></a>',
+        confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>' + window.spl.getLocaleString("launch_another_payload") + '</b></a>',
         showConfirmButton: true,
         showDenyButton: true,
-        denyButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">' + getLocaleString("quit_application") + '</a>',
+        denyButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">' + window.spl.getLocaleString("quit_application") + '</a>',
         showCancelButton: false,
     }).then((result) => {
         if (result.isConfirmed) {
         } else if (result.isDenied) {
-            ipcRenderer.send('quitApplication');
+            window.spl.quitApplication();
         }
     });
 });
@@ -122,16 +99,16 @@ function refreshGUI() {
 
     if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv, true);
-        deviceStatusDiv.innerHTML = '<div class="nouserselect">' + getLocaleString("switch_found") + '</div>';
+        deviceStatusDiv.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("switch_found") + '</div>';
         deviceProgressDiv.style.display = 'none';
         currentStep = 2;
     } else {
         updateButton(deviceStatusContainerDiv, false);
-        deviceStatusDiv.innerHTML = '<div class="nouserselect">' + getLocaleString("searching_for_switch") + '</div>';
+        deviceStatusDiv.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("searching_for_switch") + '</div>';
         deviceProgressDiv.style.display = 'inline';
     }
 
-    payload = ((initialised) && (ipcRenderer.sendSync('validatePayload')));
+    payload = ((initialised) && (window.spl.validatePayload()));
     if (payload) {
         updateButton(selectPayloadFromFileSystemBtn, true, payload.replace(/^.*[\\\/]/, ''));
         
@@ -143,7 +120,7 @@ function refreshGUI() {
             currentStep = 3;
         }
     } else {
-        updateButton(selectPayloadFromFileSystemBtn, false, getLocaleString('open_local_payload'));
+        updateButton(selectPayloadFromFileSystemBtn, false, window.spl.getLocaleString('open_local_payload'));
     }
 
     for (var i = 1; i < 4; i++) {
@@ -164,62 +141,29 @@ function refreshGUI() {
     }
 
     initialised = true;
-    //console.log('GUI refreshed!');
 }
 
 function doWindowsSwitchDriverPrompt() {
-    if ((ipcRenderer.sendSync('getOSType') == 'Windows_NT') && (!ipcRenderer.sendSync('hasDriverBeenChecked'))) {
-        const Swal = require('sweetalert2');
+    if ((window.spl.getOSType() == 'Windows_NT') && (!window.spl.hasDriverBeenChecked())) {
         Swal.fire({
-            title: '<a class="nouserselect" style="color:var(--title-text-color);">' + getLocaleString("driver_dialog_title") + '</a>',
-            html: "<a class='nouserselect' style='color:var(--subtitle-text-color);'>" + getLocaleString('driver_dialog_msg') + "</a>",
+            title: '<a class="nouserselect" style="color:var(--title-text-color);">' + window.spl.getLocaleString("driver_dialog_title") + '</a>',
+            html: "<a class='nouserselect' style='color:var(--subtitle-text-color);'>" + window.spl.getLocaleString('driver_dialog_msg') + "</a>",
             //icon: 'error',
             background: 'var(--main-background-color)',
-            confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>' + getLocaleString('install_driver') + '</b></a>',
+            confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>' + window.spl.getLocaleString('install_driver') + '</b></a>',
             showConfirmButton: true,
-            denyButtonText: "<a class='nouserselect' style='color:var(--text-color);'>" + getLocaleString('driver_already_installed') + "</a>",
+            denyButtonText: "<a class='nouserselect' style='color:var(--text-color);'>" + window.spl.getLocaleString('driver_already_installed') + "</a>",
             showDenyButton: true,
             showCancelButton: false
         }).then((result) => {
             if (result.isConfirmed) {
-                ipcRenderer.send('launchDriverInstaller');
-                ipcRenderer.on('getDriverInstallerLaunchCode', (event, code) => {
-                    ipcRenderer.send('setDriverCheckAsComplete');
+                window.spl.launchDriverInstaller();
+                window.spl.receive('getDriverInstallerLaunchCode', (event, code) => {
+                    window.spl.setDriverCheckAsComplete();
                     console.log('Driver installer exit code:' + code);
-                    // const Toast = Swal.mixin({
-                    //     toast: true,
-                    //     position: 'top-end',
-                    //     showConfirmButton: false,
-                    //     timer: 5000,
-                    //     timerProgressBar: true,
-                    //     didOpen: (toast) => {
-                    //         toast.addEventListener('mouseenter', Swal.stopTimer)
-                    //         toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    //     }
-                    // });
-                    // if (code == 1) {
-                    //     title = 'Driver installation succeeded';
-                    //     titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
-                    //     console.log(title);
-                    //     Toast.fire({
-                    //         icon: 'success',
-                    //         title: titleHTML,
-                    //         background: 'var(--main-background-color)'
-                    //     });
-                    //     ipcRenderer.send('setDriverCheckAsComplete');
-                    // } else {
-                    //     title = 'Driver installation failed or was stopped';
-                    //     titleHTML = '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>';
-                    //     console.log(title);
-                    //     Toast.fire({
-                    //         icon: 'warning',
-                    //         title: titleHTML,
-                    //         background: 'var(--main-background-color)'
-                    //     });
-                    // }
                 });
             } else if (result.isDenied) {
-                ipcRenderer.send('setDriverCheckAsComplete');
+                window.spl.setDriverCheckAsComplete();
             }
         });
     }

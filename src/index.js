@@ -29,7 +29,6 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const createWindow = () => {
-    const path = require('path');
     if (devMode) {
         var width = 960;
         var height = 650;
@@ -39,6 +38,7 @@ const createWindow = () => {
     }
 
     // Create the browser window.
+    const path = require('path');
     const { BrowserWindow } = require('electron');
     const mainWindow = new BrowserWindow({
         width: width,
@@ -46,13 +46,12 @@ const createWindow = () => {
         backgroundColor: '#121212',
         show: false,
         webPreferences: {
-            nodeIntegration: true
-            // nodeIntegration: false,
-            // nodeIntegrationInWorker: false,
-            // contextIsolation: true,
-            // enableRemoteModule: false,
-            // sandbox: true,
-            // preload: path.join(__dirname, 'preload.js')
+            nodeIntegration: true,
+            nodeIntegrationInWorker: false,
+            contextIsolation: true,
+            enableRemoteModule: false,
+            sandbox: true,
+            preload: path.join(__dirname, 'preload.js')
         }
     });
 
