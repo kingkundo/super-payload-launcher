@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld(
         searchForDevice: () => {
             ipcRenderer.send('searchForDevice');
         },
+        setPayloadManually: (newPath) => {
+            ipcRenderer.send('setPayloadManually', newPath);
+        },
         selectPayloadFromFileSystem: () => {
             ipcRenderer.send('selectPayloadFromFileSystem');
         },

@@ -25,5 +25,6 @@
     "install_driver": "Install driver",
     "driver_already_installed": "It's already installed",
     "select_payload_file": "Choose a payload file",
-    "payload_file": "Payload file"
+    "payload_file": "Payload file",
+    "no_device_no_dragdrop": "Drag 'n' dropping payloads only works when you've got a Switch connected in RCM mode"
 }

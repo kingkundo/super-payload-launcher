@@ -12,7 +12,7 @@ window.addEventListener('load', function () {
     doWindowsSwitchDriverPrompt();
 });
 
-function writeTranslatedText(){
+function writeTranslatedText() {
     function updateInnerHTML(elementId, key, innertag = '', outertag = '') {
         document.getElementById(elementId).innerHTML = innertag + window.spl.getLocaleString(key) + outertag;
     }
@@ -47,7 +47,7 @@ window.spl.on('deviceStatusUpdate', (event, connected) => {
     }
 });
 
-window.spl.on('showToast', (event, text, icon) => {
+function showToast(text, icon) {
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -56,15 +56,19 @@ window.spl.on('showToast', (event, text, icon) => {
         timer: 5000,
         timerProgressBar: true,
         didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
-      })
-      
-      Toast.fire({
+    })
+
+    Toast.fire({
         icon: icon,
         title: '<a class="nouserselect" style="color:var(--title-text-color);">' + text + '</a>',
-      })
+    });
+}
+
+window.spl.on('showToast', (event, text, icon) => {
+    showToast(text, icon);
 });
 
 window.spl.on('refreshGUI', (event) => {
@@ -190,3 +194,83 @@ function doWindowsSwitchDriverPrompt() {
         });
     }
 }
+
+// Drag drop stuff...
+
+var dropZone = document.getElementById('dropzone');
+
+function showDropZone() {
+	dropZone.style.display = "block";
+}
+function hideDropZone() {
+    dropZone.style.display = "none";
+}
+
+//     if (!lastDeviceStatus) {
+//         showToast(window.spl.getLocaleString('no_device_no_dragdrop'), );
+//         return;
+//     }
+
+//     event.preventDefault();
+//     event.stopPropagation();
+
+    // for (const f of event.dataTransfer.files) {
+    //     // Using the path attribute to get absolute file path 
+    //     if (f.path.split('.').pop() == 'bin') {
+    //         console.log('Payload dropped into window: ' + f.path);
+    //         window.spl.setPayloadManually(f.path);
+    //         break;
+    //     }
+    // }
+
+function allowDrag(e) {
+    if (lastDeviceStatus) {
+
+        console.log(e.dataTransfer.files);
+
+
+        // for (var i = 0; i < e.dataTransfer.items.length; i++) {
+        //     // If dropped items aren't files, reject them
+        //     if (e.dataTransfer.items[i].kind === 'file') {
+        //         var file = e.dataTransfer.items[i].getAsFile();
+        //         if (file.name.split('.').pop() == 'bin') {
+        //             e.preventDefault();
+        //             break;
+        //         }
+        //     }
+        // }
+    } else {
+        showToast(window.spl.getLocaleString('no_device_no_dragdrop'), 'warning');
+    }
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    hideDropZone();
+
+    for (var i = 0; i < e.dataTransfer.items.length; i++) {
+        // If dropped items aren't files, reject them
+        if (e.dataTransfer.items[i].kind === 'file') {
+            var file = e.dataTransfer.items[i].getAsFile();
+            console.log('Payload dropped into window: ' + file.path);
+            //window.spl.setPayloadManually(file.path);
+            break;
+        }
+    }
+}
+
+// 1
+window.addEventListener('dragenter', function(e) {
+    showDropZone();
+});
+
+// 2
+dropZone.addEventListener('dragenter', allowDrag);
+
+// 3
+dropZone.addEventListener('dragleave', function(e) {
+    hideDropZone();
+});
+
+// 4
+dropZone.addEventListener('drop', handleDrop);

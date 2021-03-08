@@ -1,10 +1,10 @@
-const { app, ipcMain } = require('electron');
+const { app, ipcMain, ipcRenderer } = require('electron');
 
 // For USB bindings issue:
 //node_modules/.bin/electron-rebuild
 
 // Global developer mode toggle.
-var devMode = false;
+var devMode = true;
 
 // Other globals.
 SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION = true;
@@ -176,7 +176,14 @@ ipcMain.on('getOSType', (event) => {
     event.returnValue = os.type();
 });
 
-// Get 
+ipcMain.on('setPayloadManually', (event, newPath) => {
+    payloadPath = newPath;
+    if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
+        launchPayload(event);
+    } else {
+        event.sender.send('refreshGUI');
+    }
+});
 
 ipcMain.on('payloadSendAutomatically', (event) => {
     event.returnValue = SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION;
@@ -289,7 +296,6 @@ async function downloadAssetFromGithubLatestRelease(github_owner, github_repo, a
         return false;
     }
 }
-
 
 // Download latest Fusee Gelee from Github and launch it.
 
