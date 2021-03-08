@@ -13,6 +13,8 @@
     "switch_found": "A Switch in RCM mode has been found",
     "searching_for_switch": "Now searching for a Switch in RCM mode",
     "open_local_payload": "Open a downloaded payload",
+    "get_fusee_payload": "Use the latest Fusée Gelée (for Atmosphere) payload",
+    "get_hekate_payload": "Use the latest Hekate payload",
     "driver_dialog_title": "Have you installed the driver?",
     "driver_dialog_msg": "On Windows you have to install a driver to talk to the Switch. If you haven't already, make sure to install it now. It's very simple.",
     "install_driver": "Install driver",

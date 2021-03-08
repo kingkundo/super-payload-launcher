@@ -12,6 +12,12 @@ contextBridge.exposeInMainWorld(
         selectPayloadFromFileSystem: () => {
             ipcRenderer.send('selectPayloadFromFileSystem');
         },
+        selectLatestFusee: () => {
+            ipcRenderer.send('selectLatestFusee');
+        },
+        selectLatestHekate: () => {
+            ipcRenderer.send('selectLatestHekate');
+        },
         validatePayload: () => {
             return ipcRenderer.sendSync('validatePayload');
         },
@@ -20,6 +26,9 @@ contextBridge.exposeInMainWorld(
         },
         getOSType: () => {
             return ipcRenderer.sendSync('getOSType');
+        },
+        payloadSendAutomatically: () => {
+            return ipcRenderer.sendSync('payloadSendAutomatically');
         },
         launchDriverInstaller: () => {
             ipcRenderer.send('launchDriverInstaller');

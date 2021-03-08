@@ -5,6 +5,7 @@ var initialised = false;
 window.addEventListener('load', function () {
     initialised = false;
     writeTranslatedText();
+    document.getElementById('i3').hidden = window.spl.payloadSendAutomatically();
     refreshGUI();
     window.spl.searchForDevice();
     startDeviceAutosearch();
@@ -49,7 +50,9 @@ window.spl.on('deviceStatusUpdate', (event, connected) => {
 
 window.spl.on('refreshGUI', (event) => {
     refreshGUI();
-})
+});
+
+
 
 window.spl.on('showPayloadLaunchedPrompt', (event, success) => {
     if (success) {
@@ -95,7 +98,11 @@ function refreshGUI() {
     var deviceStatusContainerDiv = document.getElementById('devicestatuscontainerdiv');
     var deviceStatusDiv = document.getElementById('devicestatusdiv');
     var deviceProgressDiv = document.getElementById('devicestatusprogressdiv');
+
     var selectPayloadFromFileSystemBtn = document.getElementById('selectPayloadFromFileSystemBtn');
+    var selectLatestFuseeBtn = document.getElementById('selectLatestFuseeBtn');
+    var selectLatestHekateBtn = document.getElementById('selectLatestHekateBtn');
+
 
     if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv, true);
@@ -121,6 +128,8 @@ function refreshGUI() {
         }
     } else {
         updateButton(selectPayloadFromFileSystemBtn, false, window.spl.getLocaleString('open_local_payload'));
+        updateButton(selectLatestFuseeBtn, false, window.spl.getLocaleString('get_fusee_payload'));
+        updateButton(selectLatestHekateBtn, false, window.spl.getLocaleString('get_hekate_payload'))
     }
 
     for (var i = 1; i < 4; i++) {

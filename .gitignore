@@ -1,5 +1,6 @@
 # super-payload-launcher specific
 drivercheckcomplete
+payloads/
 
 # Logs
 logs

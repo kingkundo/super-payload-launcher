@@ -7,6 +7,7 @@ const { app, ipcMain } = require('electron');
 var devMode = false;
 
 // Other globals.
+SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION = true;
 SWITCH_EXISTS_BADGE = ' ';
 
 const INTERMEZZO = new Uint8Array([
@@ -29,12 +30,16 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const createWindow = () => {
-    if (devMode) {
-        var width = 960;
+    if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
         var height = 650;
     } else {
+        var height = 750;
+    }
+
+    if (devMode) {
+        var width = 960;
+    } else {
         var width = 750;
-        var height = 650;
     }
 
     // Create the browser window.
@@ -77,8 +82,8 @@ const createWindow = () => {
     });
 
     mainWindow.once('ready-to-show', () => {
-        mainWindow.show()
-    })
+        mainWindow.show();
+    });
 };
 
 function createMenu() {
@@ -171,6 +176,12 @@ ipcMain.on('getOSType', (event) => {
     event.returnValue = os.type();
 });
 
+// Get 
+
+ipcMain.on('payloadSendAutomatically', (event) => {
+    event.returnValue = SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION;
+});
+
 // If on Windows, prompt the user to install the zadig driver.
 
 ipcMain.on('hasDriverBeenChecked', (event) => {
@@ -195,7 +206,7 @@ ipcMain.on('setDriverCheckAsComplete', (event) => {
 ipcMain.on('launchDriverInstaller', (event) => {
     const path = require('path');
     const { exec } = require('child_process');
-    const driverprocess = exec('"' + path.join(__dirname, '/apx_driver/InstallDriver.exe') + '"', function (error, stdout, stderr) {
+    const driverprocess = exec('"' + path.join(__dirname, 'apx_driver', 'InstallDriver.exe') + '"', function (error, stdout, stderr) {
         event.sender.send('getDriverInstallerLaunchCode', -1);
     });
     driverprocess.on('exit', function (code) {
@@ -228,11 +239,85 @@ ipcMain.on('selectPayloadFromFileSystem', (event) => {
                 let paths = result.filePaths;
                 if (paths && paths.length > 0) {
                     payloadPath = paths[0];
-                    event.sender.send('refreshGUI');
+                    if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
+                        launchPayload(event);
+                    } else {
+                        event.sender.send('refreshGUI');
+                    }
                 }
             }
         }
     );
+});
+
+// Template function to get asset from latest GitHub release.
+
+async function downloadAssetFromGithubLatestRelease(githubowner, githubrepo, assetname, savepath) {
+    const { Octokit } = require("@octokit/rest");
+    var octokit = new Octokit();
+    try {
+        var atmosphereReleaseInfo = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
+            owner: githubowner,
+            repo: githubrepo
+        });
+
+        var assetsInfoJSON = atmosphereReleaseInfo.data.assets;
+        for(var i = 0; i < assetsInfoJSON.length; i++) {
+            if (assetsInfoJSON[i].name == assetname) {
+                //console.log(assetsInfoJSON[i].browser_download_url);
+
+                const path = require('path');
+                const { BrowserWindow } = require('electron');
+                const { download } = require('electron-dl');
+
+                const newFilePath = path.join(savepath, assetname);
+                const fs = require('fs');
+                if (fs.existsSync(newFilePath)) {
+                    fs.unlinkSync(newFilePath);
+                }
+
+                const win = BrowserWindow.getFocusedWindow();
+                downloadedFile = await download(win, assetsInfoJSON[i].browser_download_url, {
+                    directory: savepath
+                });
+
+                return downloadedFile.getSavePath();
+            }
+        }
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+
+// Download latest Fusee Gelee from Github and launch it.
+
+async function selectLatestFusee(event) {
+    const PAYLOAD_NAME = 'fusee-primary.bin'
+    const path = require('path');
+    newFuseePath = await downloadAssetFromGithubLatestRelease('Atmosphere-NX', 'Atmosphere', PAYLOAD_NAME, path.join(__dirname, 'payloads', 'downloads'));
+    if (newFuseePath !== false)  {
+        payloadPath = newFuseePath;
+
+        if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
+            launchPayload(event);
+        } else {
+            event.sender.send('refreshGUI');
+        }
+
+        event.sender.send('refreshGUI');
+    }
+}
+
+// Download latest Hekate from Github and launch it.
+
+async function selectLatestHekate(event) {
+    
+}
+
+ipcMain.on('selectLatestFusee', (event) => {
+    selectLatestFusee(event);
 });
 
 // Reset the whole process.

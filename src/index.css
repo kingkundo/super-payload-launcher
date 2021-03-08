@@ -29,6 +29,10 @@ p {
   color: var(--text-color);
 }
 
+.payloadBtnContainer {
+  padding: 5px;
+}
+
 .rcmdescription {
   font-size: 0.875em;
 }
