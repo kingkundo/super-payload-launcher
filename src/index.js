@@ -7,6 +7,7 @@ const { app, ipcMain } = require('electron');
 var devMode = false;
 
 // Other globals.
+SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION = true;
 SWITCH_EXISTS_BADGE = ' ';
 
 const INTERMEZZO = new Uint8Array([
@@ -29,12 +30,16 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const createWindow = () => {
-    if (devMode) {
-        var width = 960;
+    if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
         var height = 650;
     } else {
+        var height = 750;
+    }
+
+    if (devMode) {
+        var width = 960;
+    } else {
         var width = 750;
-        var height = 650;
     }
 
     // Create the browser window.
@@ -77,15 +82,15 @@ const createWindow = () => {
     });
 
     mainWindow.once('ready-to-show', () => {
-        mainWindow.show()
-    })
+        mainWindow.show();
+    });
 };
 
 function createMenu() {
     const { Menu/*, MenuItem*/ } = require('electron');
     const path = require('path');
-    var menuJson = require(path.join(__dirname, 'config', 'menu.json'));
-    var menu = Menu.buildFromTemplate(menuJson);
+    var menuJSON = require(path.join(__dirname, 'config', 'menu.json'));
+    var menu = Menu.buildFromTemplate(menuJSON);
     Menu.setApplicationMenu(menu);
 }
 
@@ -171,6 +176,12 @@ ipcMain.on('getOSType', (event) => {
     event.returnValue = os.type();
 });
 
+// Get 
+
+ipcMain.on('payloadSendAutomatically', (event) => {
+    event.returnValue = SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION;
+});
+
 // If on Windows, prompt the user to install the zadig driver.
 
 ipcMain.on('hasDriverBeenChecked', (event) => {
@@ -195,7 +206,7 @@ ipcMain.on('setDriverCheckAsComplete', (event) => {
 ipcMain.on('launchDriverInstaller', (event) => {
     const path = require('path');
     const { exec } = require('child_process');
-    const driverprocess = exec('"' + path.join(__dirname, '/apx_driver/InstallDriver.exe') + '"', function (error, stdout, stderr) {
+    const driverprocess = exec('"' + path.join(__dirname, 'apx_driver', 'InstallDriver.exe') + '"', function (error, stdout, stderr) {
         event.sender.send('getDriverInstallerLaunchCode', -1);
     });
     driverprocess.on('exit', function (code) {
@@ -209,11 +220,12 @@ ipcMain.on('launchDriverInstaller', (event) => {
 ipcMain.on('selectPayloadFromFileSystem', (event) => {
     payloadPath = '';
 
+    const path = require('path');
     const { BrowserWindow } = require('electron');
     const window = BrowserWindow.getFocusedWindow();
     const options = {
         title: getLocaleString('select_payload_file'),
-        //defaultPath: '/path/to/something/',
+        defaultPath: path.join(__dirname, 'payloads'),
         //buttonLabel: 'Do it',
         filters: [
             { name: getLocaleString('payload_file'), extensions: ['bin'] }
@@ -228,11 +240,133 @@ ipcMain.on('selectPayloadFromFileSystem', (event) => {
                 let paths = result.filePaths;
                 if (paths && paths.length > 0) {
                     payloadPath = paths[0];
-                    event.sender.send('refreshGUI');
+                    if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
+                        launchPayload(event);
+                    } else {
+                        event.sender.send('refreshGUI');
+                    }
                 }
             }
         }
     );
+});
+
+// Template function to get asset from latest GitHub release.
+
+async function downloadAssetFromGithubLatestRelease(github_owner, github_repo, asset_name, save_path, exact_match = true) {
+    const { Octokit } = require("@octokit/rest");
+    var octokit = new Octokit();
+    try {
+        var atmosphereReleaseInfo = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
+            owner: github_owner,
+            repo: github_repo
+        });
+
+        var assetsInfoJSON = atmosphereReleaseInfo.data.assets;
+        for(var i = 0; i < assetsInfoJSON.length; i++) {
+            var assetInfoJSON = assetsInfoJSON[i];
+            if ((assetInfoJSON.name == asset_name) || ((!exact_match) && assetInfoJSON.name.includes(asset_name))) {
+                const path = require('path');
+                const { BrowserWindow } = require('electron');
+                const { download } = require('electron-dl');
+
+                const newFilePath = path.join(save_path, asset_name);
+                const fs = require('fs');
+                if (fs.existsSync(newFilePath)) {
+                    fs.unlinkSync(newFilePath);
+                }
+
+                const win = BrowserWindow.getFocusedWindow();
+                downloadedFile = await download(win, assetInfoJSON.browser_download_url, {
+                    directory: save_path
+                });
+
+                return downloadedFile.getSavePath();
+            }
+        }
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+
+// Download latest Fusee Gelee from Github and launch it.
+
+async function selectLatestFusee(event) {
+    const PAYLOAD_NAME = 'fusee-primary.bin'
+    const path = require('path');
+    const payloadDownloadFolderPath = path.join(__dirname, 'payloads', 'downloads');
+    event.sender.send('showToast', getLocaleString('downloading_fusee'), 'info');
+    newFuseePath = await downloadAssetFromGithubLatestRelease('Atmosphere-NX', 'Atmosphere', PAYLOAD_NAME, payloadDownloadFolderPath);
+    if (newFuseePath !== false)  {
+        const newPath = path.join(__dirname, 'payloads', 'downloads', ('latest-' + PAYLOAD_NAME));
+        const fs = require('fs');
+        await fs.promises.rename(newFuseePath, newPath);
+        event.sender.send('showToast', getLocaleString('fusee_downloaded'), 'success');
+        payloadPath = newPath;
+
+        if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
+            launchPayload(event);
+        } else {
+            event.sender.send('refreshGUI');
+        }
+
+        return;
+    }
+
+    event.sender.send('showToast', getLocaleString('payload_download_failed'), 'error');
+    return;
+}
+
+ipcMain.on('selectLatestFusee', (event) => {
+    selectLatestFusee(event);
+});
+
+// Download latest Hekate from Github and launch it.
+
+async function selectLatestHekate(event) {
+    const ZIP_NAME_INCLUDES = 'hekate_ctcaer';
+    const path = require('path');
+    const cacheFolderPath = path.join(__dirname, 'payloads', 'downloads', 'cache');
+    deleteEverythingInPath(cacheFolderPath);
+    event.sender.send('showToast', getLocaleString('downloading_hekate'), 'info');
+    var hekateZipFile = await downloadAssetFromGithubLatestRelease('CTCaer', 'hekate', ZIP_NAME_INCLUDES, cacheFolderPath, false);
+    if (hekateZipFile !== false)  {
+        event.sender.send('showToast', getLocaleString('hekate_downloaded'), 'success');
+        try {
+            const extract = require('extract-zip');
+            await extract(hekateZipFile, { dir: cacheFolderPath });
+
+            const fs = require('fs');
+            const files = await fs.promises.readdir( cacheFolderPath );
+            for (const file of files) {
+                if (file.includes(ZIP_NAME_INCLUDES) && file.includes('.bin')) {
+                    const newPath = path.join(__dirname, 'payloads', 'downloads', file);
+                    await fs.promises.rename(path.join(cacheFolderPath, file), newPath);
+                    payloadPath = newPath;
+
+                    if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
+                        launchPayload(event);
+                    } else {
+                        event.sender.send('refreshGUI');
+                    }
+
+                    deleteEverythingInPath(cacheFolderPath);
+                    return;
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        event.sender.send('showToast', getLocaleString('payload_download_failed'), 'error');
+        deleteEverythingInPath(cacheFolderPath);
+    }
+}
+
+ipcMain.on('selectLatestHekate', (event) => {
+    selectLatestHekate(event);
 });
 
 // Reset the whole process.
@@ -460,3 +594,18 @@ function createRCMPayload(intermezzo, payload) {
 
     return rcmPayload;
 }
+
+function deleteEverythingInPath(dirPath) {
+    const fs = require('fs');
+    try { var files = fs.readdirSync(dirPath); }
+    catch (e) { return; }
+    if (files.length > 0)
+        for (var i = 0; i < files.length; i++) {
+            var filePath = dirPath + '/' + files[i];
+            if (fs.statSync(filePath).isFile())
+                fs.unlinkSync(filePath);
+            else
+                deleteEverythingInPath(filePath);
+        }
+    fs.rmdirSync(dirPath);
+};

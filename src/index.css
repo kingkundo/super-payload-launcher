@@ -29,6 +29,10 @@ p {
   color: var(--text-color);
 }
 
+.payloadBtnContainer {
+  padding: 5px;
+}
+
 .rcmdescription {
   font-size: 0.875em;
 }
@@ -85,6 +89,7 @@ a.splbutton{
   color:#FFFFFF;
   text-align:center;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 a.splbutton:hover{

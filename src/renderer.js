@@ -5,6 +5,7 @@ var initialised = false;
 window.addEventListener('load', function () {
     initialised = false;
     writeTranslatedText();
+    document.getElementById('i3').hidden = window.spl.payloadSendAutomatically();
     refreshGUI();
     window.spl.searchForDevice();
     startDeviceAutosearch();
@@ -26,7 +27,6 @@ function writeTranslatedText(){
     updateInnerHTML('step_two_title', 'step_two_title');
     updateInnerHTML('step_three_title', 'step_three_title');
     updateInnerHTML('launch_payload_button', 'launch_payload_button');
-
 }
 
 function startDeviceAutosearch() {
@@ -35,23 +35,43 @@ function startDeviceAutosearch() {
     }, 1000);
 }
 
-window.spl.receive('setInitialised', (event, init) => {
+window.spl.on('setInitialised', (event, init) => {
     initialised = init;
     refreshGUI();
 });
 
-window.spl.receive('deviceStatusUpdate', (event, connected) => {
+window.spl.on('deviceStatusUpdate', (event, connected) => {
     if (lastDeviceStatus != connected) {
         lastDeviceStatus = connected;
         refreshGUI();
     }
 });
 
-window.spl.receive('refreshGUI', (event) => {
-    refreshGUI();
-})
+window.spl.on('showToast', (event, text, icon) => {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        background: 'var(--main-background-color)',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+      
+      Toast.fire({
+        icon: icon,
+        title: '<a class="nouserselect" style="color:var(--title-text-color);">' + text + '</a>',
+      })
+});
 
-window.spl.receive('showPayloadLaunchedPrompt', (event, success) => {
+window.spl.on('refreshGUI', (event) => {
+    refreshGUI();
+});
+
+window.spl.on('showPayloadLaunchedPrompt', (event, success) => {
     if (success) {
         title = window.spl.getLocaleString('payload_delivery_success');
     } else {
@@ -95,7 +115,10 @@ function refreshGUI() {
     var deviceStatusContainerDiv = document.getElementById('devicestatuscontainerdiv');
     var deviceStatusDiv = document.getElementById('devicestatusdiv');
     var deviceProgressDiv = document.getElementById('devicestatusprogressdiv');
+
     var selectPayloadFromFileSystemBtn = document.getElementById('selectPayloadFromFileSystemBtn');
+    var selectLatestFuseeBtn = document.getElementById('selectLatestFuseeBtn');
+    var selectLatestHekateBtn = document.getElementById('selectLatestHekateBtn');
 
     if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv, true);
@@ -111,9 +134,6 @@ function refreshGUI() {
     payload = ((initialised) && (window.spl.validatePayload()));
     if (payload) {
         updateButton(selectPayloadFromFileSystemBtn, true, payload.replace(/^.*[\\\/]/, ''));
-        
-        // TODO: WHAT DID THIS DO? LOOKS POINTLESS AND WRONG SO COMMENTED OUT...
-        //deviceStatusDiv.innerHTML = '<div class="nouserselect">A Switch in RCM mode has been found</div>';
 
         // Only allow step 3 if Switch is connected.
         if (lastDeviceStatus) {
@@ -121,6 +141,8 @@ function refreshGUI() {
         }
     } else {
         updateButton(selectPayloadFromFileSystemBtn, false, window.spl.getLocaleString('open_local_payload'));
+        updateButton(selectLatestFuseeBtn, false, window.spl.getLocaleString('get_fusee_payload'));
+        updateButton(selectLatestHekateBtn, false, window.spl.getLocaleString('get_hekate_payload'))
     }
 
     for (var i = 1; i < 4; i++) {
@@ -158,7 +180,7 @@ function doWindowsSwitchDriverPrompt() {
         }).then((result) => {
             if (result.isConfirmed) {
                 window.spl.launchDriverInstaller();
-                window.spl.receive('getDriverInstallerLaunchCode', (event, code) => {
+                window.spl.on('getDriverInstallerLaunchCode', (event, code) => {
                     window.spl.setDriverCheckAsComplete();
                     console.log('Driver installer exit code:' + code);
                 });

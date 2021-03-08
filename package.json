@@ -50,7 +50,10 @@
     }
   },
   "dependencies": {
+    "@octokit/rest": "^18.3.4",
+    "electron-dl": "^3.2.0",
     "electron-squirrel-startup": "^1.0.0",
+    "extract-zip": "^2.0.1",
     "i18next": "^19.9.1",
     "i18next-fs-backend": "^1.1.0",
     "webusb": "^2.2.0"

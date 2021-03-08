@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Super Payload Launcher 🚀🎮</title>
-    <script src="sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -23,16 +22,19 @@
 
     <div class="instruction" id="i2">
         <h3 id="step_two_title" class="nouserselect"></h3>
-        <a id="selectPayloadFromFileSystemBtn" class="splbutton" onclick="window.spl.selectPayloadFromFileSystem();"></a>
+        <div class="payloadBtnContainer"><a id="selectLatestFuseeBtn" class="splbutton" onclick="window.spl.selectLatestFusee();"></a></div>
+        <div class="payloadBtnContainer"><a id="selectLatestHekateBtn" class="splbutton" onclick="window.spl.selectLatestHekate();"></a></div>
+        <div class="payloadBtnContainer"><a id="selectPayloadFromFileSystemBtn" class="splbutton" onclick="window.spl.selectPayloadFromFileSystem();"></a></div>
     </div>
 
-    <div class="instruction" id="i3">
+    <div hidden class="instruction" id="i3">
         <h3 id="step_three_title" class="nouserselect"></h3>
         <a class="splbutton" onclick="window.spl.launchPayload();">
             <div id="launch_payload_button" class="nouserselect"></div>
         </a>
     </div>
 
+    <script src="sweetalert2.all.min.js"></script>
     <script src="renderer.js"></script>
 </body>
 
