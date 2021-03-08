@@ -1,6 +1,7 @@
 var currentStep = 1;
 var lastDeviceStatus = false;
 var initialised = false;
+var disableAllInput = false;
 
 window.addEventListener('load', function () {
     initialised = false;
@@ -69,6 +70,11 @@ function showToast(text, icon) {
 
 window.spl.on('showToast', (event, text, icon) => {
     showToast(text, icon);
+});
+
+window.spl.on('disableAllInput', (event, disable) => {
+    disableAllInput = disable;
+    refreshGUI();
 });
 
 window.spl.on('refreshGUI', (event) => {
@@ -149,6 +155,10 @@ function refreshGUI() {
         updateButton(selectLatestHekateBtn, false, window.spl.getLocaleString('get_hekate_payload'))
     }
 
+    if (disableAllInput) {
+        currentStep = -1;
+    }
+
     for (var i = 1; i < 4; i++) {
         var instructionID = 'i' + i.toString();
         var currentInstructionDiv = document.getElementById(instructionID);
@@ -206,57 +216,27 @@ function hideDropZone() {
     dropZone.style.display = "none";
 }
 
-//     if (!lastDeviceStatus) {
-//         showToast(window.spl.getLocaleString('no_device_no_dragdrop'), );
-//         return;
-//     }
-
-//     event.preventDefault();
-//     event.stopPropagation();
-
-    // for (const f of event.dataTransfer.files) {
-    //     // Using the path attribute to get absolute file path 
-    //     if (f.path.split('.').pop() == 'bin') {
-    //         console.log('Payload dropped into window: ' + f.path);
-    //         window.spl.setPayloadManually(f.path);
-    //         break;
-    //     }
-    // }
-
-function allowDrag(e) {
-    if (lastDeviceStatus) {
-
-        console.log(e.dataTransfer.files);
-
-
-        // for (var i = 0; i < e.dataTransfer.items.length; i++) {
-        //     // If dropped items aren't files, reject them
-        //     if (e.dataTransfer.items[i].kind === 'file') {
-        //         var file = e.dataTransfer.items[i].getAsFile();
-        //         if (file.name.split('.').pop() == 'bin') {
-        //             e.preventDefault();
-        //             break;
-        //         }
-        //     }
-        // }
-    } else {
-        showToast(window.spl.getLocaleString('no_device_no_dragdrop'), 'warning');
-    }
-}
-
 function handleDrop(e) {
     e.preventDefault();
     hideDropZone();
 
+    if (!lastDeviceStatus) {
+        showToast(window.spl.getLocaleString('no_device_no_dragdrop'), 'warning');
+        return;
+    }
+
     for (var i = 0; i < e.dataTransfer.items.length; i++) {
-        // If dropped items aren't files, reject them
         if (e.dataTransfer.items[i].kind === 'file') {
             var file = e.dataTransfer.items[i].getAsFile();
-            console.log('Payload dropped into window: ' + file.path);
-            //window.spl.setPayloadManually(file.path);
-            break;
+            if (file.path.split('.').pop() == 'bin') {
+                console.log('Payload dropped into window: ' + file.path);
+                window.spl.setPayloadManually(file.path);
+                return;
+            }
         }
     }
+
+    showToast(window.spl.getLocaleString('payload_not_in_drop'), 'error');
 }
 
 // 1
@@ -265,7 +245,7 @@ window.addEventListener('dragenter', function(e) {
 });
 
 // 2
-dropZone.addEventListener('dragenter', allowDrag);
+//dropZone.addEventListener('dragenter', allowDrag);
 
 // 3
 dropZone.addEventListener('dragleave', function(e) {

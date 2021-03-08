@@ -26,5 +26,6 @@
     "driver_already_installed": "It's already installed",
     "select_payload_file": "Choose a payload file",
     "payload_file": "Payload file",
-    "no_device_no_dragdrop": "Drag 'n' dropping payloads only works when you've got a Switch connected in RCM mode"
+    "no_device_no_dragdrop": "Drag 'n' dropping payloads only works when you've got a Switch connected in RCM mode",
+    "payload_not_in_drop": "No payload was detected in the items dropped into the app"
 }

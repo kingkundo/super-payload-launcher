@@ -49,7 +49,7 @@ contextBridge.exposeInMainWorld(
         on: (channel, func) => {
             let validChannels = ['setInitialised', 'deviceStatusUpdate', 'refreshGUI', 
                                 'showPayloadLaunchedPrompt', 'getDriverInstallerLaunchCode',
-                                'showToast'];
+                                'showToast', 'disableAllInput'];
             if (validChannels.includes(channel)) {
                 ipcRenderer.on(channel, (event, ...args) => func(event, ...args));
             }

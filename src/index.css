@@ -189,15 +189,6 @@ a.splbutton:hover{
   100% { transform: rotate(360deg); } 
 }
 
-.wrapper {
-	max-width: 50rem;
-	margin: 1rem auto;
-	padding: .2rem 1rem;
-	
-	border: 2px solid #444;
-	background: rgba(#444,.2);
-}
-
 .dropzone {
 	box-sizing: border-box;
 	display: none;
@@ -210,4 +201,42 @@ a.splbutton:hover{
 
 	background: #13121275;
 	border: 11px dashed #2c2c2c;
+}
+
+#container {
+  -webkit-animation: 2s ease 0s normal forwards 1 fadein;
+  animation: 2s ease 0s normal forwards 1 fadein;
+}
+@keyframes fadein {
+  0% { opacity: 0;}
+  from {
+      opacity:0;
+  }
+  to {
+      opacity:1;
+  }
+}
+@-moz-keyframes fadein { /* Firefox */
+  from {
+      opacity:0;
+  }
+  to {
+      opacity:1;
+  }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+  from {
+      opacity:0;
+  }
+  to {
+      opacity:1;
+  }
+}
+@-o-keyframes fadein { /* Opera */
+  from {
+      opacity:0;
+  }
+  to {
+      opacity: 1;
+  }
 }

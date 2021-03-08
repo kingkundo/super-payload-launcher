@@ -4,7 +4,7 @@ const { app, ipcMain, ipcRenderer } = require('electron');
 //node_modules/.bin/electron-rebuild
 
 // Global developer mode toggle.
-var devMode = true;
+var devMode = false;
 
 // Other globals.
 SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION = true;
@@ -300,6 +300,8 @@ async function downloadAssetFromGithubLatestRelease(github_owner, github_repo, a
 // Download latest Fusee Gelee from Github and launch it.
 
 async function selectLatestFusee(event) {
+    event.sender.send('disableAllInput', true);
+
     const PAYLOAD_NAME = 'fusee-primary.bin'
     const path = require('path');
     const payloadDownloadFolderPath = path.join(__dirname, 'payloads', 'downloads');
@@ -318,9 +320,11 @@ async function selectLatestFusee(event) {
             event.sender.send('refreshGUI');
         }
 
+        event.sender.send('disableAllInput', false);
         return;
     }
 
+    event.sender.send('disableAllInput', false);
     event.sender.send('showToast', getLocaleString('payload_download_failed'), 'error');
     return;
 }
@@ -332,6 +336,8 @@ ipcMain.on('selectLatestFusee', (event) => {
 // Download latest Hekate from Github and launch it.
 
 async function selectLatestHekate(event) {
+    event.sender.send('disableAllInput', true);
+
     const ZIP_NAME_INCLUDES = 'hekate_ctcaer';
     const path = require('path');
     const cacheFolderPath = path.join(__dirname, 'payloads', 'downloads', 'cache');
@@ -358,6 +364,7 @@ async function selectLatestHekate(event) {
                         event.sender.send('refreshGUI');
                     }
 
+                    event.sender.send('disableAllInput', false);
                     deleteEverythingInPath(cacheFolderPath);
                     return;
                 }
@@ -366,6 +373,7 @@ async function selectLatestHekate(event) {
             console.log(err);
         }
 
+        event.sender.send('disableAllInput', false);
         event.sender.send('showToast', getLocaleString('payload_download_failed'), 'error');
         deleteEverythingInPath(cacheFolderPath);
     }
@@ -456,6 +464,7 @@ async function launchPayload(event) {
     function onPayloadLaunchCompletion(success) {
         event.sender.send('showPayloadLaunchedPrompt', success);
         reset(event);
+        event.sender.send('disableAllInput', false);
 
         if (success) {
             console.log('The stack has been smashed!');
@@ -483,6 +492,10 @@ async function launchPayload(event) {
         console.log('The selected payload path is invalid, or the payload is broken... Cannot launch payload.');
         return;
     }
+
+    // Disable all input while we inject the payload.
+    // We reenable in the function that alerts the user to the success or failure.
+    event.sender.send('disableAllInput', true);
 
     // Bodge to prevent immediately detecting the switch
     // the moment after payload injection.
