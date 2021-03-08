@@ -1,6 +1,7 @@
 var currentStep = 1;
 var lastDeviceStatus = false;
 var initialised = false;
+var disableAllInput = false;
 
 window.addEventListener('load', function () {
     initialised = false;
@@ -12,7 +13,7 @@ window.addEventListener('load', function () {
     doWindowsSwitchDriverPrompt();
 });
 
-function writeTranslatedText(){
+function writeTranslatedText() {
     function updateInnerHTML(elementId, key, innertag = '', outertag = '') {
         document.getElementById(elementId).innerHTML = innertag + window.spl.getLocaleString(key) + outertag;
     }
@@ -25,6 +26,7 @@ function writeTranslatedText(){
     updateInnerHTML('step_one_desc', 'step_one_desc');
     updateInnerHTML('step_one_secondary_desc', 'step_one_sec_desc', '<b>', '</b>');
     updateInnerHTML('step_two_title', 'step_two_title');
+    updateInnerHTML('step_two_extra_desc', 'step_two_extra_desc')
     updateInnerHTML('step_three_title', 'step_three_title');
     updateInnerHTML('launch_payload_button', 'launch_payload_button');
 }
@@ -47,7 +49,7 @@ window.spl.on('deviceStatusUpdate', (event, connected) => {
     }
 });
 
-window.spl.on('showToast', (event, text, icon) => {
+function showToast(text, icon) {
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -56,15 +58,24 @@ window.spl.on('showToast', (event, text, icon) => {
         timer: 5000,
         timerProgressBar: true,
         didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
-      })
-      
-      Toast.fire({
+    })
+
+    Toast.fire({
         icon: icon,
         title: '<a class="nouserselect" style="color:var(--title-text-color);">' + text + '</a>',
-      })
+    });
+}
+
+window.spl.on('showToast', (event, text, icon) => {
+    showToast(text, icon);
+});
+
+window.spl.on('disableAllInput', (event, disable) => {
+    disableAllInput = disable;
+    refreshGUI();
 });
 
 window.spl.on('refreshGUI', (event) => {
@@ -145,6 +156,10 @@ function refreshGUI() {
         updateButton(selectLatestHekateBtn, false, window.spl.getLocaleString('get_hekate_payload'))
     }
 
+    if (disableAllInput) {
+        currentStep = -1;
+    }
+
     for (var i = 1; i < 4; i++) {
         var instructionID = 'i' + i.toString();
         var currentInstructionDiv = document.getElementById(instructionID);
@@ -190,3 +205,53 @@ function doWindowsSwitchDriverPrompt() {
         });
     }
 }
+
+// Drag drop stuff...
+
+var dropZone = document.getElementById('dropzone');
+
+function showDropZone() {
+	dropZone.style.display = "block";
+}
+function hideDropZone() {
+    dropZone.style.display = "none";
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    hideDropZone();
+
+    if (!lastDeviceStatus) {
+        showToast(window.spl.getLocaleString('no_device_no_dragdrop'), 'warning');
+        return;
+    }
+
+    for (var i = 0; i < e.dataTransfer.items.length; i++) {
+        if (e.dataTransfer.items[i].kind === 'file') {
+            var file = e.dataTransfer.items[i].getAsFile();
+            if (file.path.split('.').pop() == 'bin') {
+                console.log('Payload dropped into window: ' + file.path);
+                window.spl.setPayloadManually(file.path);
+                return;
+            }
+        }
+    }
+
+    showToast(window.spl.getLocaleString('payload_not_in_drop'), 'error');
+}
+
+// 1
+window.addEventListener('dragenter', function(e) {
+    showDropZone();
+});
+
+// 2
+//dropZone.addEventListener('dragenter', allowDrag);
+
+// 3
+dropZone.addEventListener('dragleave', function(e) {
+    hideDropZone();
+});
+
+// 4
+dropZone.addEventListener('drop', handleDrop);

@@ -8,30 +8,40 @@
 </head>
 
 <body>
-    <h1 id="title" class="nouserselect"></h1>
+    <div id="container" class="container">
+        <div id="dropzone" class="dropzone" ondragenter="event.stopPropagation(); event.preventDefault();"
+            ondragover="event.stopPropagation(); event.preventDefault();"
+            ondrop="event.stopPropagation(); event.preventDefault();">
+        </div>
+        <h1 id="title" class="nouserselect"></h1>
 
-    <div class="instruction" id="i1">
-        <h3 id="step_one_title" class="nouserselect"></h3>
-        <p id="step_one_desc" class="nouserselect rcmdescription"></p>
-        <p id="step_one_secondary_desc" class="nouserselect rcmdescription"></p>
-        <a id="devicestatuscontainerdiv" class="displaybox nouserselect">
-            <div id="devicestatusprogressdiv" class="sk-chase"></div>
-            <div id="devicestatusdiv" class="displayboxinner nouserselect"></div>
-        </a>
-    </div>
+        <div class="instruction" id="i1">
+            <h3 id="step_one_title" class="nouserselect"></h3>
+            <p id="step_one_desc" class="nouserselect rcmdescription"></p>
+            <p id="step_one_secondary_desc" class="nouserselect rcmdescription"></p>
+            <a id="devicestatuscontainerdiv" class="displaybox nouserselect">
+                <div id="devicestatusprogressdiv" class="sk-chase"></div>
+                <div id="devicestatusdiv" class="displayboxinner nouserselect"></div>
+            </a>
+        </div>
 
-    <div class="instruction" id="i2">
-        <h3 id="step_two_title" class="nouserselect"></h3>
-        <div class="payloadBtnContainer"><a id="selectLatestFuseeBtn" class="splbutton" onclick="window.spl.selectLatestFusee();"></a></div>
-        <div class="payloadBtnContainer"><a id="selectLatestHekateBtn" class="splbutton" onclick="window.spl.selectLatestHekate();"></a></div>
-        <div class="payloadBtnContainer"><a id="selectPayloadFromFileSystemBtn" class="splbutton" onclick="window.spl.selectPayloadFromFileSystem();"></a></div>
-    </div>
+        <div class="instruction" id="i2">
+            <h3 id="step_two_title" class="nouserselect"></h3>
+            <div class="payloadBtnContainer"><a id="selectLatestFuseeBtn" class="splbutton"
+                    onclick="window.spl.selectLatestFusee();"></a></div>
+            <div class="payloadBtnContainer"><a id="selectLatestHekateBtn" class="splbutton"
+                    onclick="window.spl.selectLatestHekate();"></a></div>
+            <div class="payloadBtnContainer"><a id="selectPayloadFromFileSystemBtn" class="splbutton"
+                    onclick="window.spl.selectPayloadFromFileSystem();"></a></div>
+            <p id="step_two_extra_desc" class="nouserselect rcmdescription"></p>
+        </div>
 
-    <div hidden class="instruction" id="i3">
-        <h3 id="step_three_title" class="nouserselect"></h3>
-        <a class="splbutton" onclick="window.spl.launchPayload();">
-            <div id="launch_payload_button" class="nouserselect"></div>
-        </a>
+        <div hidden class="instruction" id="i3">
+            <h3 id="step_three_title" class="nouserselect"></h3>
+            <a class="splbutton" onclick="window.spl.launchPayload();">
+                <div id="launch_payload_button" class="nouserselect"></div>
+            </a>
+        </div>
     </div>
 
     <script src="sweetalert2.all.min.js"></script>

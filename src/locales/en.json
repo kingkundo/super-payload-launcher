@@ -4,6 +4,7 @@
     "step_one_desc": "Insert the RCM jig, plug your Switch into the computer and turn it all the way off. Then hold the power button while holding the volume up button. This may take some practice. You can use <a target='_blank' href='https://www.youtube.com/watch?v=d042IoBkJjI'>this handy guide on YouTube</a> for assistance.",
     "step_one_sec_desc": "When it's plugged in and in RCM mode the app will automatically detect it.",
     "step_two_title": "2. Select a payload",
+    "step_two_extra_desc": "You can also drag and drop a payload into the app.",
     "step_three_title": "3. Send the payload",
     "launch_payload_button": "Send the selected payload now",
     "payload_delivery_success": "Payload delivered successfully",
@@ -25,5 +26,7 @@
     "install_driver": "Install driver",
     "driver_already_installed": "It's already installed",
     "select_payload_file": "Choose a payload file",
-    "payload_file": "Payload file"
+    "payload_file": "Payload file",
+    "no_device_no_dragdrop": "Drag 'n' dropping payloads only works when you've got a Switch connected in RCM mode",
+    "payload_not_in_drop": "No payload was detected in the items dropped into the app"
 }
