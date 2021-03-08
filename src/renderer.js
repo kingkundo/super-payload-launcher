@@ -27,7 +27,6 @@ function writeTranslatedText(){
     updateInnerHTML('step_two_title', 'step_two_title');
     updateInnerHTML('step_three_title', 'step_three_title');
     updateInnerHTML('launch_payload_button', 'launch_payload_button');
-
 }
 
 function startDeviceAutosearch() {
