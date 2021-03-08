@@ -45,7 +45,8 @@ contextBridge.exposeInMainWorld(
         // Event listeners...
         on: (channel, func) => {
             let validChannels = ['setInitialised', 'deviceStatusUpdate', 'refreshGUI', 
-                                'showPayloadLaunchedPrompt', 'getDriverInstallerLaunchCode'];
+                                'showPayloadLaunchedPrompt', 'getDriverInstallerLaunchCode',
+                                'showToast'];
             if (validChannels.includes(channel)) {
                 ipcRenderer.on(channel, (event, ...args) => func(event, ...args));
             }

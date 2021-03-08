@@ -220,11 +220,12 @@ ipcMain.on('launchDriverInstaller', (event) => {
 ipcMain.on('selectPayloadFromFileSystem', (event) => {
     payloadPath = '';
 
+    const path = require('path');
     const { BrowserWindow } = require('electron');
     const window = BrowserWindow.getFocusedWindow();
     const options = {
         title: getLocaleString('select_payload_file'),
-        //defaultPath: '/path/to/something/',
+        defaultPath: path.join(__dirname, 'payloads'),
         //buttonLabel: 'Do it',
         filters: [
             { name: getLocaleString('payload_file'), extensions: ['bin'] }
@@ -295,9 +296,15 @@ async function downloadAssetFromGithubLatestRelease(github_owner, github_repo, a
 async function selectLatestFusee(event) {
     const PAYLOAD_NAME = 'fusee-primary.bin'
     const path = require('path');
-    newFuseePath = await downloadAssetFromGithubLatestRelease('Atmosphere-NX', 'Atmosphere', PAYLOAD_NAME, path.join(__dirname, 'payloads', 'downloads'));
+    const payloadDownloadFolderPath = path.join(__dirname, 'payloads', 'downloads');
+    event.sender.send('showToast', getLocaleString('downloading_fusee'), 'info');
+    newFuseePath = await downloadAssetFromGithubLatestRelease('Atmosphere-NX', 'Atmosphere', PAYLOAD_NAME, payloadDownloadFolderPath);
     if (newFuseePath !== false)  {
-        payloadPath = newFuseePath;
+        const newPath = path.join(__dirname, 'payloads', 'downloads', ('latest-' + PAYLOAD_NAME));
+        const fs = require('fs');
+        await fs.promises.rename(newFuseePath, newPath);
+        event.sender.send('showToast', getLocaleString('fusee_downloaded'), 'success');
+        payloadPath = newPath;
 
         if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
             launchPayload(event);
@@ -305,20 +312,61 @@ async function selectLatestFusee(event) {
             event.sender.send('refreshGUI');
         }
 
-        event.sender.send('refreshGUI');
+        return;
     }
-}
 
-// Download latest Hekate from Github and launch it.
-
-async function selectLatestHekate(event) {
-    const ZIP_NAME = 'fusee-primary.bin'
-    const path = require('path');
-    newFuseePath = await downloadAssetFromGithubLatestRelease('Atmosphere-NX', 'Atmosphere', PAYLOAD_NAME, path.join(__dirname, 'payloads', 'downloads'));   
+    event.sender.send('showToast', getLocaleString('payload_download_failed'), 'error');
+    return;
 }
 
 ipcMain.on('selectLatestFusee', (event) => {
     selectLatestFusee(event);
+});
+
+// Download latest Hekate from Github and launch it.
+
+async function selectLatestHekate(event) {
+    const ZIP_NAME_INCLUDES = 'hekate_ctcaer';
+    const path = require('path');
+    const cacheFolderPath = path.join(__dirname, 'payloads', 'downloads', 'cache');
+    deleteEverythingInPath(cacheFolderPath);
+    event.sender.send('showToast', getLocaleString('downloading_hekate'), 'info');
+    var hekateZipFile = await downloadAssetFromGithubLatestRelease('CTCaer', 'hekate', ZIP_NAME_INCLUDES, cacheFolderPath, false);
+    if (hekateZipFile !== false)  {
+        event.sender.send('showToast', getLocaleString('hekate_downloaded'), 'success');
+        try {
+            const extract = require('extract-zip');
+            await extract(hekateZipFile, { dir: cacheFolderPath });
+
+            const fs = require('fs');
+            const files = await fs.promises.readdir( cacheFolderPath );
+            for (const file of files) {
+                if (file.includes(ZIP_NAME_INCLUDES) && file.includes('.bin')) {
+                    const newPath = path.join(__dirname, 'payloads', 'downloads', file);
+                    await fs.promises.rename(path.join(cacheFolderPath, file), newPath);
+                    payloadPath = newPath;
+
+                    if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
+                        launchPayload(event);
+                    } else {
+                        event.sender.send('refreshGUI');
+                    }
+
+                    deleteEverythingInPath(cacheFolderPath);
+                    return;
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        event.sender.send('showToast', getLocaleString('payload_download_failed'), 'error');
+        deleteEverythingInPath(cacheFolderPath);
+    }
+}
+
+ipcMain.on('selectLatestHekate', (event) => {
+    selectLatestHekate(event);
 });
 
 // Reset the whole process.
@@ -546,3 +594,18 @@ function createRCMPayload(intermezzo, payload) {
 
     return rcmPayload;
 }
+
+function deleteEverythingInPath(dirPath) {
+    const fs = require('fs');
+    try { var files = fs.readdirSync(dirPath); }
+    catch (e) { return; }
+    if (files.length > 0)
+        for (var i = 0; i < files.length; i++) {
+            var filePath = dirPath + '/' + files[i];
+            if (fs.statSync(filePath).isFile())
+                fs.unlinkSync(filePath);
+            else
+                deleteEverythingInPath(filePath);
+        }
+    fs.rmdirSync(dirPath);
+};

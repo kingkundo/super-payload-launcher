@@ -47,6 +47,26 @@ window.spl.on('deviceStatusUpdate', (event, connected) => {
     }
 });
 
+window.spl.on('showToast', (event, text, icon) => {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        background: 'var(--main-background-color)',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+      
+      Toast.fire({
+        icon: icon,
+        title: '<a class="nouserselect" style="color:var(--title-text-color);">' + text + '</a>',
+      })
+});
+
 window.spl.on('refreshGUI', (event) => {
     refreshGUI();
 });
