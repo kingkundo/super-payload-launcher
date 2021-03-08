@@ -52,8 +52,6 @@ window.spl.on('refreshGUI', (event) => {
     refreshGUI();
 });
 
-
-
 window.spl.on('showPayloadLaunchedPrompt', (event, success) => {
     if (success) {
         title = window.spl.getLocaleString('payload_delivery_success');
@@ -118,9 +116,6 @@ function refreshGUI() {
     payload = ((initialised) && (window.spl.validatePayload()));
     if (payload) {
         updateButton(selectPayloadFromFileSystemBtn, true, payload.replace(/^.*[\\\/]/, ''));
-        
-        // TODO: WHAT DID THIS DO? LOOKS POINTLESS AND WRONG SO COMMENTED OUT...
-        //deviceStatusDiv.innerHTML = '<div class="nouserselect">A Switch in RCM mode has been found</div>';
 
         // Only allow step 3 if Switch is connected.
         if (lastDeviceStatus) {
