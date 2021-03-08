@@ -101,7 +101,6 @@ function refreshGUI() {
     var selectLatestFuseeBtn = document.getElementById('selectLatestFuseeBtn');
     var selectLatestHekateBtn = document.getElementById('selectLatestHekateBtn');
 
-
     if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv, true);
         deviceStatusDiv.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("switch_found") + '</div>';
