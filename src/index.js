@@ -252,33 +252,32 @@ ipcMain.on('selectPayloadFromFileSystem', (event) => {
 
 // Template function to get asset from latest GitHub release.
 
-async function downloadAssetFromGithubLatestRelease(githubowner, githubrepo, assetname, savepath) {
+async function downloadAssetFromGithubLatestRelease(github_owner, github_repo, asset_name, save_path, exact_match = true) {
     const { Octokit } = require("@octokit/rest");
     var octokit = new Octokit();
     try {
         var atmosphereReleaseInfo = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
-            owner: githubowner,
-            repo: githubrepo
+            owner: github_owner,
+            repo: github_repo
         });
 
         var assetsInfoJSON = atmosphereReleaseInfo.data.assets;
         for(var i = 0; i < assetsInfoJSON.length; i++) {
-            if (assetsInfoJSON[i].name == assetname) {
-                //console.log(assetsInfoJSON[i].browser_download_url);
-
+            var assetInfoJSON = assetsInfoJSON[i];
+            if ((assetInfoJSON.name == asset_name) || ((!exact_match) && assetInfoJSON.name.includes(asset_name))) {
                 const path = require('path');
                 const { BrowserWindow } = require('electron');
                 const { download } = require('electron-dl');
 
-                const newFilePath = path.join(savepath, assetname);
+                const newFilePath = path.join(save_path, asset_name);
                 const fs = require('fs');
                 if (fs.existsSync(newFilePath)) {
                     fs.unlinkSync(newFilePath);
                 }
 
                 const win = BrowserWindow.getFocusedWindow();
-                downloadedFile = await download(win, assetsInfoJSON[i].browser_download_url, {
-                    directory: savepath
+                downloadedFile = await download(win, assetInfoJSON.browser_download_url, {
+                    directory: save_path
                 });
 
                 return downloadedFile.getSavePath();
@@ -313,7 +312,9 @@ async function selectLatestFusee(event) {
 // Download latest Hekate from Github and launch it.
 
 async function selectLatestHekate(event) {
-    
+    const ZIP_NAME = 'fusee-primary.bin'
+    const path = require('path');
+    newFuseePath = await downloadAssetFromGithubLatestRelease('Atmosphere-NX', 'Atmosphere', PAYLOAD_NAME, path.join(__dirname, 'payloads', 'downloads'));   
 }
 
 ipcMain.on('selectLatestFusee', (event) => {
