@@ -26,6 +26,7 @@ function writeTranslatedText() {
     updateInnerHTML('step_one_desc', 'step_one_desc');
     updateInnerHTML('step_one_secondary_desc', 'step_one_sec_desc', '<b>', '</b>');
     updateInnerHTML('step_two_title', 'step_two_title');
+    updateInnerHTML('step_two_extra_desc', 'step_two_extra_desc')
     updateInnerHTML('step_three_title', 'step_three_title');
     updateInnerHTML('launch_payload_button', 'launch_payload_button');
 }

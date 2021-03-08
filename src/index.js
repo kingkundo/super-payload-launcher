@@ -37,9 +37,9 @@ const createWindow = () => {
     }
 
     if (devMode) {
-        var width = 960;
+        var width = 900;
     } else {
-        var width = 750;
+        var width = 800;
     }
 
     // Create the browser window.

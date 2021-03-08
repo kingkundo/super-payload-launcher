@@ -1,11 +1,15 @@
 :root {
-  --main-background-color: #121212;
-  --title-text-color: rgb(255, 255, 255);
-  --subtitle-text-color: rgb(255, 255, 255);
-  --text-color: rgb(255, 255, 255);
-  --hyperlink-color: rgb(214, 161, 16);
+  --primary-color: #121212;
+  --secondary-color: rgb(214, 161, 16);
+  --tertiary-color: rgb(255, 255, 255);
 
-  --searching-device-color: rgb(214, 161, 16);
+  --main-background-color: var(--primary-color);
+  --title-text-color: var(--tertiary-color);
+  --subtitle-text-color: var(--tertiary-color);
+  --text-color: var(--tertiary-color);
+  --hyperlink-color: var(--secondary-color);
+
+  --searching-device-color: var(--secondary-color);
   --device-found-color: rgb(33, 214, 16);
 }
 
@@ -14,7 +18,7 @@ body {
   background-color: var(--main-background-color);
   margin: auto;
   max-width: 38rem;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 h1 {
@@ -172,7 +176,6 @@ a.splbutton:hover{
   }
 
  
-  
 .sk-chase {
   width: 20px;
   height: 20px;
@@ -200,7 +203,7 @@ a.splbutton:hover{
   z-index: 99999;
 
 	background: #13121275;
-	border: 11px dashed #2c2c2c;
+	border: 11px dashed var(--secondary-color);
 }
 
 #container {
