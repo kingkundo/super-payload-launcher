@@ -2,6 +2,13 @@
 drivercheckcomplete
 #payloads/
 
+# compiled javascript
+dist/app.js
+dist/main.js
+dist/preload.js
+
+#-----
+
 # Logs
 logs
 *.log
