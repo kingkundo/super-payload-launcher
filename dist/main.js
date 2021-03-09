@@ -39,9 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var _a = require('electron'), BrowserWindow = _a.BrowserWindow, ipcMain = _a.ipcMain;
 // For USB bindings issue:
 //node_modules/.bin/electron-rebuild
-// TODO: FIX MENUS
 // Globals.
-var DEV_MODE = true;
+var DEV_MODE = false;
 var SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION = true;
 var SWITCH_EXISTS_BADGE = ' ';
 var INTERMEZZO = new Uint8Array([
@@ -160,7 +159,7 @@ var Main = /** @class */ (function () {
         // Remove the application menu if not on MacOS.
         var os = require('os');
         if (os.type() != 'Darwin') {
-            //Main.mainWindow.removeMenu();
+            Main.mainWindow.removeMenu();
         }
         // and load the index.html of the app.
         Main.mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -482,7 +481,8 @@ var Main = /** @class */ (function () {
             function loadPayloadOnWindows() {
                 var path = require('path');
                 var exec = require('child_process').exec;
-                var smashProcess = exec('"' + path.join(__dirname, 'tegrasmash', 'TegraRcmSmash.exe' + '" ' + Main.payloadPath), function (error, stdout, stderr) { });
+                var command = '"' + path.join(__dirname, 'tegrasmash', 'TegraRcmSmash.exe') + '" -w "' + Main.payloadPath + '"';
+                var smashProcess = exec(command, function (error, stdout, stderr) { });
                 smashProcess.on('exit', function (code) {
                     onPayloadLaunchCompletion(code == 0);
                 });

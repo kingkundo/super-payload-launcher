@@ -4,7 +4,7 @@ const { BrowserWindow, ipcMain } = require('electron');
 //node_modules/.bin/electron-rebuild
 
 // Globals.
-const DEV_MODE: boolean = true;
+const DEV_MODE: boolean = false;
 const SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION: boolean = true;
 const SWITCH_EXISTS_BADGE = ' ';
 
@@ -388,14 +388,6 @@ export default class Main {
     }
 
     private static async getDevice() {
-        // TODO: REMOVE THIS!!!
-        //return true;
-
-        // if (disallowDeviceSearch) {
-        //     disallowDeviceSearch = false;
-        //     return null;
-        // }
-
         const USB = require("WEBUSB").usb;
         try {
             return await USB.requestDevice({ filters: [{ vendorId: 0x0955 }] });
@@ -437,8 +429,9 @@ export default class Main {
         function loadPayloadOnWindows() {
             const path = require('path');
             const { exec } = require('child_process');
-            const smashProcess = exec('"' + path.join(__dirname, 'tegrasmash', 'TegraRcmSmash.exe' + '" ' + Main.payloadPath), function (error: string, stdout: string, stderr: string) { });
-            smashProcess.on('exit', function (code: number) {
+            const command = '"' + path.join(__dirname, 'tegrasmash', 'TegraRcmSmash.exe') + '" -w "' + Main.payloadPath + '"';
+            const smashProcess = exec(command, function (error: string, stdout: string, stderr: string) {});
+            smashProcess.on('exit', (code: number) => {
                 onPayloadLaunchCompletion(code == 0);
             });
         }
