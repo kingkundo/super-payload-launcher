@@ -29,6 +29,7 @@
           "^(/.github$)",
           "^(/build$)",
           "^(/.vscode$)",
+          "^(/.icons$)",
           "^(/src$)",
           "drivercheckcomplete",
           ".gitignore",
