@@ -45,7 +45,6 @@ contextBridge.exposeInMainWorld(
         quitApplication: () => {
             ipcRenderer.send('quitApplication');
         },
-        // Event listeners...
         on: (channel: string, func: any) => {
             let validChannels = ['setInitialised', 'deviceStatusUpdate', 'refreshGUI', 
                                 'showPayloadLaunchedPrompt', 'getDriverInstallerLaunchCode',
