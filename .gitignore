@@ -1,6 +1,7 @@
 # super-payload-launcher specific
 drivercheckcomplete
-#payloads/
+payloads/*
+!payloads/eraseme
 
 # compiled javascript
 dist/app.js

@@ -439,10 +439,6 @@ export default class Main {
         // We reenable in the function that alerts the user to the success or failure.
         event.sender.send('disableAllInput', true);
     
-        // Bodge to prevent immediately detecting the switch
-        // the moment after payload injection.
-        //disallowDeviceSearch = true;
-    
         const os = require('os');
         if (os.type() == 'Windows_NT') {
             loadPayloadOnWindows();
