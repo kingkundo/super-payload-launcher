@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Typescript",
+            "type": "shell",
+            "windows": {
+                "command": "tsc.cmd"
+            },
+            "command": "${workspaceFolder}//node_modules//.bin/tsc"
+        }
+    ]
+}

@@ -26,9 +26,23 @@ Check out the repo to your machine, and open the project's folder in your comman
 ```
 npm install
 ```
+### Compile the Typescript to Javascript
+Windows:
+```
+tsc.cmd
+```
+Not Windows:
+```
+tsc
+```
 ### Run the application:
+Windows:
 ```
 node_modules/.bin/electron.cmd
+```
+Not Windows:
+```
+node_modules/.bin/electron
 ```
 Alternatively you can load the workspace in Visual Studio Code and use my premade launch configuration. Just open the workspace and hit play, on Windows, MacOS or Linux.
 
