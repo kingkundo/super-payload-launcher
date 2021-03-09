@@ -1,4 +1,4 @@
-# Super Payload Launcher (for Nintendo Switch) 🚀🎮
+# **Super Payload Launcher (for Nintendo Switch) 🚀🎮**
 A new, pretty, simple, and cross platform tool for injecting payloads onto your Nintendo Switch to boot into Atmosphere, Hekate, Android or other custom firmwares.
 
 ---
@@ -18,9 +18,17 @@ Head to [the releases page](https://github.com/versionxcontrol/super-payload-lau
 ---
 
 # How to build the application (for developers) 🏗️
-This is an application built using [Electron](https://www.electronjs.org/). To get started make sure you've got NodeJS installed and up to date.
+This is an application built using [Electron](https://www.electronjs.org/) and written in mostly Typescript, with the renderer remaining in pure Javascript. To get started make sure you've got NodeJS installed and up to date.
 
 Check out the repo to your machine, and open the project's folder in your command line of choice.
+<br />
+
+## **The short way**
+
+Load the **spl.code-workspace** in Visual Studio Code and use my premade launch configuration. Just open the workspace and hit play, on Windows, MacOS or Linux.
+<br />
+
+## **The long way**
 
 ### Install dependencies:
 ```
@@ -44,7 +52,6 @@ Not Windows:
 ```
 node_modules/.bin/electron
 ```
-Alternatively you can load the workspace in Visual Studio Code and use my premade launch configuration. Just open the workspace and hit play, on Windows, MacOS or Linux.
 
 <br />
 
