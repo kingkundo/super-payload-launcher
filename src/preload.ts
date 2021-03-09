@@ -3,13 +3,13 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld(
     "spl",
     {
-        getLocaleString: (key) => {
+        getLocaleString: (key: string) => {
             return ipcRenderer.sendSync('toLocaleString', key);
         },
         searchForDevice: () => {
             ipcRenderer.send('searchForDevice');
         },
-        setPayloadManually: (newPath) => {
+        setPayloadManually: (newPath: string) => {
             ipcRenderer.send('setPayloadManually', newPath);
         },
         selectPayloadFromFileSystem: () => {
@@ -46,7 +46,7 @@ contextBridge.exposeInMainWorld(
             ipcRenderer.send('quitApplication');
         },
         // Event listeners...
-        on: (channel, func) => {
+        on: (channel: string, func: any) => {
             let validChannels = ['setInitialised', 'deviceStatusUpdate', 'refreshGUI', 
                                 'showPayloadLaunchedPrompt', 'getDriverInstallerLaunchCode',
                                 'showToast', 'disableAllInput'];
