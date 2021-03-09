@@ -160,7 +160,7 @@ var Main = /** @class */ (function () {
         // Remove the application menu if not on MacOS.
         var os = require('os');
         if (os.type() != 'Darwin') {
-            Main.mainWindow.removeMenu();
+            //Main.mainWindow.removeMenu();
         }
         // and load the index.html of the app.
         Main.mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -183,9 +183,37 @@ var Main = /** @class */ (function () {
         var Menu = require('electron').Menu;
         var path = require('path');
         // Set up the application's menu.
-        var menuJSON = require(path.join(__dirname, 'config', 'menu.json'));
-        //var menu = Menu.buildFromTemplate(menuJSON);
-        //Menu.setApplicationMenu(menu);
+        var menuJSON = [
+            {
+                "label": "Edit",
+                "submenu": [
+                    {
+                        "role": "quit"
+                    }
+                ]
+            },
+            {
+                "label": "View",
+                "submenu": [
+                    {
+                        "role": "togglefullscreen"
+                    }
+                ]
+            },
+            {
+                "role": "window",
+                "submenu": [
+                    {
+                        "role": "minimize"
+                    },
+                    {
+                        "role": "close"
+                    }
+                ]
+            }
+        ];
+        var menu = Menu.buildFromTemplate(menuJSON);
+        Menu.setApplicationMenu(menu);
         // Set up internationalisation.
         var i18next = require('i18next');
         var Backend = require('i18next-fs-backend');

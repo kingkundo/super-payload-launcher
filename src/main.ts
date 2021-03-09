@@ -61,7 +61,6 @@ export default class Main {
         ipcMain.on('searchForDevice', async (event) => Main.searchForDevice(event));
         ipcMain.on('launchPayload', async (event) => await Main.launchPayload(event));
 
-
         process.on("uncaughtException", (err) => {
             if (err.message == "Can't close device with a pending request") {
                 return;
@@ -167,9 +166,37 @@ export default class Main {
         const path = require('path');
 
         // Set up the application's menu.
-        const menuJSON = require(path.join(__dirname, 'config', 'menu.json'));
-        //var menu = Menu.buildFromTemplate(menuJSON);
-        //Menu.setApplicationMenu(menu);
+        const menuJSON: Electron.MenuItemConstructorOptions[] = [
+            {
+               "label": "Edit",
+               "submenu": [
+                  {
+                     "role": "quit"
+                  }
+               ]
+            },
+            {
+               "label": "View",
+               "submenu": [
+                  {
+                     "role": "togglefullscreen"
+                  }
+               ]
+            },
+            {
+               "role": "window",
+               "submenu": [
+                  {
+                     "role": "minimize"
+                  },
+                  {
+                     "role": "close"
+                  }
+               ]
+            }
+         ]
+        var menu = Menu.buildFromTemplate(menuJSON);
+        Menu.setApplicationMenu(menu);
 
         // Set up internationalisation.
         const i18next = require('i18next');
