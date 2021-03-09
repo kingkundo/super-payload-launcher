@@ -7,7 +7,7 @@
             "windows": {
                 "command": "tsc.cmd"
             },
-            "command": "tsc"
+            "command": "${workspaceFolder}//node_modules//.bin/tsc"
         }
     ]
 }
