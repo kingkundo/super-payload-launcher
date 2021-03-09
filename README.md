@@ -82,7 +82,8 @@ This application is written and licensed under GPL-3.0. You are free to modify a
 
 - Kate Temkin ([ktemkin](https://twitter.com/ktemkin)) for her amazing discovery of the initial Fusée Gelée exploit that all our Nintendo Switch homebrew is enabled by.
 - Rajko Stojadinovic ([rajkosto](https://twitter.com/rajkosto)) for creating the TegraRcmSmash software that currently powers the Windows side of this application, until webusb sort their s**t out anyway 😛.
-- Michael ([SciresM](https://twitter.com/SciresM)) who has been such a hero to the Switch homebrew/hacking community. We all use your software, bro.
+- Michael ([SciresM](https://twitter.com/SciresM)) who has been such a hero to the Switch homebrew/hacking community. This project links directly to his Fusee Primary payload releases, so shout out to him!
+- ([CTCaer](https://twitter.com/ctcaer)) who maintains the Hekate bootloader (it does so much more than that word conveys) that this application links directly to.
 
 ---
 
