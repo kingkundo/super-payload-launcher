@@ -24,8 +24,12 @@ Check out the repo to your machine, and open the project's folder in your comman
 <br />
 
 ## **The short way**
+### Install dependencies:
+```
+npm install
+```
 
-Load the **spl.code-workspace** in Visual Studio Code and use my premade launch configuration. Just open the workspace and hit play, on Windows, MacOS or Linux.
+Then load the **spl.code-workspace** in [Visual Studio Code](https://code.visualstudio.com/) and use my premade launch configuration. Just open the workspace and hit play, on Windows, MacOS or Linux.
 <br />
 
 ## **The long way**
