@@ -110,7 +110,7 @@ export default class Main {
             backgroundColor: '#121212',
             show: false,
             webPreferences: {
-                nodeIntegration: true,
+                nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 contextIsolation: true,
                 enableRemoteModule: false,
