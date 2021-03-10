@@ -3,7 +3,6 @@ const { BrowserWindow, ipcMain } = require('electron');
 // For USB bindings issue:
 //node_modules/.bin/electron-rebuild
 
-// Globals.
 const DEV_MODE: boolean = false;
 const SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION: boolean = true;
 const SWITCH_EXISTS_BADGE = ' ';

@@ -5,7 +5,7 @@
             "label": "Build Typescript",
             "type": "shell",
             "windows": {
-                "command": "tsc.cmd"
+                "command": "${workspaceFolder}//node_modules//.bin//tsc.cmd"
             },
             "command": "${workspaceFolder}//node_modules//.bin/tsc"
         }
