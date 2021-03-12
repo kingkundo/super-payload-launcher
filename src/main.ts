@@ -1,7 +1,7 @@
 const { BrowserWindow, ipcMain } = require('electron');
 
 // For USB bindings issue:
-//node_modules/.bin/electron-rebuild
+// https://github.com/tessel/node-usb/releases
 
 // Globals.
 const DEV_MODE: boolean = false;
