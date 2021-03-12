@@ -5,7 +5,7 @@
             "label": "Compile TS to JS",
             "type": "shell",
             "windows": {
-                "command": "${workspaceFolder}//node_modules//.bin/tsc.cmd"
+                "command": "${workspaceFolder}//node_modules//.bin//tsc.cmd"
             },
             "command": "${workspaceFolder}//node_modules//.bin/tsc"
         },

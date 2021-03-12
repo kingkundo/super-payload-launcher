@@ -3,7 +3,6 @@ const { BrowserWindow, ipcMain } = require('electron');
 // For USB bindings issue:
 // https://github.com/tessel/node-usb/releases
 
-// Globals.
 const DEV_MODE: boolean = false;
 const SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION: boolean = true;
 const SWITCH_EXISTS_BADGE = ' ';
@@ -111,7 +110,7 @@ export default class Main {
             backgroundColor: '#121212',
             show: false,
             webPreferences: {
-                nodeIntegration: true,
+                nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 contextIsolation: true,
                 enableRemoteModule: false,
