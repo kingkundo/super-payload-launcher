@@ -74,6 +74,7 @@
     "webusb": "^2.2.0"
   },
   "devDependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.1",
     "@electron-forge/cli": "^6.0.0-beta.54",
     "@electron-forge/maker-deb": "^6.0.0-beta.54",
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",

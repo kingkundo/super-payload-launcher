@@ -50,7 +50,7 @@ contextBridge.exposeInMainWorld(
                                 'showPayloadLaunchedPrompt', 'getDriverInstallerLaunchCode',
                                 'showToast', 'disableAllInput'];
             if (validChannels.includes(channel)) {
-                ipcRenderer.on(channel, (event, ...args) => func(event, ...args));
+                ipcRenderer.on(channel, (event: any, ...args: any) => func(event, ...args));
             }
         },
     }

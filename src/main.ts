@@ -2,6 +2,7 @@ const { BrowserWindow, ipcMain } = require('electron');
 
 // For USB bindings issue:
 // https://github.com/tessel/node-usb/releases
+// then node_modules/.bin/electron-rebuild.cmd
 
 const DEV_MODE: boolean = false;
 const SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION: boolean = true;
@@ -30,21 +31,21 @@ export default class Main {
         Main.application.on('ready', Main.onReady);
 
         // Set up listeners for messages from the renderer.
-        ipcMain.on('quitApplication', (event) => Main.quitApplication());
-        ipcMain.on('getOSType', (event) => Main.getOSType(event));
-        ipcMain.on('setPayloadManually', (event, newPath) => Main.setPayloadManually(event, newPath));
-        ipcMain.on('payloadSendAutomatically', (event) => Main.isPayloadSendAutomatically(event));
-        ipcMain.on('hasDriverBeenChecked', (event) => Main.hasDriverBeenChecked(event));
-        ipcMain.on('setDriverCheckAsComplete', (event) => Main.setDriverCheckAsComplete(event));
-        ipcMain.on('launchDriverInstaller', (event) => Main.launchDriverInstaller(event));
-        ipcMain.on('selectPayloadFromFileSystem', (event) => Main.selectPayloadFromFileSystem(event));
-        ipcMain.on('selectLatestFusee', (event) => Main.selectLatestFusee(event));
-        ipcMain.on('selectLatestHekate', (event) => Main.selectLatestHekate(event));
-        ipcMain.on('reset', (event) => Main.reset(event));
-        ipcMain.on('validatePayload', (event) => event.returnValue = Main.validatePayload());
-        ipcMain.on('toLocaleString', (event, key) => event.returnValue = Main.getLocaleString(key));
-        ipcMain.on('searchForDevice', async (event) => Main.searchForDevice(event));
-        ipcMain.on('launchPayload', async (event) => await Main.launchPayload(event));
+        ipcMain.on('quitApplication', (event: any) => Main.quitApplication());
+        ipcMain.on('getOSType', (event: any) => Main.getOSType(event));
+        ipcMain.on('setPayloadManually', (event: any, newPath: string) => Main.setPayloadManually(event, newPath));
+        ipcMain.on('payloadSendAutomatically', (event: any) => Main.isPayloadSendAutomatically(event));
+        ipcMain.on('hasDriverBeenChecked', (event: any) => Main.hasDriverBeenChecked(event));
+        ipcMain.on('setDriverCheckAsComplete', (event: any) => Main.setDriverCheckAsComplete(event));
+        ipcMain.on('launchDriverInstaller', (event: any) => Main.launchDriverInstaller(event));
+        ipcMain.on('selectPayloadFromFileSystem', (event: any) => Main.selectPayloadFromFileSystem(event));
+        ipcMain.on('selectLatestFusee', (event: any) => Main.selectLatestFusee(event));
+        ipcMain.on('selectLatestHekate', (event: any) => Main.selectLatestHekate(event));
+        ipcMain.on('reset', (event: any) => Main.reset(event));
+        ipcMain.on('validatePayload', (event: any) => event.returnValue = Main.validatePayload());
+        ipcMain.on('toLocaleString', (event: any, key: string) => event.returnValue = Main.getLocaleString(key));
+        ipcMain.on('searchForDevice', async (event: any) => Main.searchForDevice(event));
+        ipcMain.on('launchPayload', async (event: any) => await Main.launchPayload(event));
 
         process.on("uncaughtException", (err) => {
             if (err.message == "Can't close device with a pending request") {
@@ -273,7 +274,7 @@ export default class Main {
     
         const { dialog } = require('electron');
         dialog.showOpenDialog(Main.mainWindow, options).then(
-            result => {
+            (result: any) => {
                 if (!result.canceled) {
                     let paths = result.filePaths;
                     if (paths && paths.length > 0) {
