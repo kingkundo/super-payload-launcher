@@ -20,7 +20,7 @@ Head to [the releases page](https://github.com/versionxcontrol/super-payload-lau
 # How to build the application (for developers) 🏗️
 This is an application built using [Electron](https://www.electronjs.org/) and written in mostly Typescript.. To get started make sure you've got NodeJS installed and up to date.
 
-Check out the repo to your machine, and load the **spl.code-workspace** in [Visual Studio Code](https://code.visualstudio.com/)
+Check out the repo to your machine, and load the **spl.code-workspace** in [Visual Studio Code](https://code.visualstudio.com/).
 <br />
 
 In the integrated terminal, type the following to get this project's dependencies.
@@ -29,7 +29,7 @@ In the integrated terminal, type the following to get this project's dependencie
 npm install
 ```
 
-Then run the launch task provided and away you go.
+Then run the debug launch task and away you go.
 <br />
 
 ### To fix broken webusb bindings:
@@ -55,9 +55,9 @@ This application is written and licensed under GPL-3.0. You are free to modify a
 # Credits 👍
 
 - Kate Temkin ([ktemkin](https://twitter.com/ktemkin)) for her amazing discovery of the initial Fusée Gelée exploit that all our Nintendo Switch homebrew is enabled by.
-- Rajko Stojadinovic ([rajkosto](https://twitter.com/rajkosto)) for creating the TegraRcmSmash software that currently powers the Windows side of this application, until webusb sort their s**t out anyway 😛.
-- Michael ([SciresM](https://twitter.com/SciresM)) who has been such a hero to the Switch homebrew/hacking community. This project links directly to his Fusee Primary payload releases, so shout out to him!
-- [CTCaer](https://twitter.com/ctcaer) who maintains the Hekate bootloader (it does so much more than that word conveys) that this application links directly to.
+- Rajko Stojadinovic ([rajkosto](https://twitter.com/rajkosto)) for creating the awesome TegraRcmSmash software that currently powers the Windows side of this application, until webusb is patched with Windows support.
+- Michael ([SciresM](https://twitter.com/SciresM)) who has been such a hero to the Switch homebrew/hacking community. This project links directly to his Fusee Primary payload releases.
+- [CTCaer](https://twitter.com/ctcaer) who maintains the indispensable Hekate bootloader that this application directly links to. 
 
 ---
 
