@@ -3,10 +3,16 @@ var lastDeviceStatus = false;
 var initialised = false;
 var disableAllInput = false;
 
+interface Window {
+    spl: any;
+}
+
+declare var Swal: any;
+
 window.addEventListener('load', function () {
     initialised = false;
     writeTranslatedText();
-    document.getElementById('i3').hidden = window.spl.payloadSendAutomatically();
+    document.getElementById('i3')!.hidden = window.spl.payloadSendAutomatically();
     refreshGUI();
     window.spl.searchForDevice();
     startDeviceAutosearch();
@@ -14,13 +20,13 @@ window.addEventListener('load', function () {
 });
 
 function writeTranslatedText() {
-    function updateInnerHTML(elementId, key, innertag = '', outertag = '') {
-        document.getElementById(elementId).innerHTML = innertag + window.spl.getLocaleString(key) + outertag;
+    function updateInnerHTML(elementId: string, key: string, innertag = '', outertag = '') {
+        document.getElementById(elementId)!.innerHTML = innertag + window.spl.getLocaleString(key) + outertag;
     }
 
-    appTitle = window.spl.getLocaleString('app_title');
+    const appTitle = window.spl.getLocaleString('app_title');
     document.title = appTitle;
-    document.getElementById('title').innerHTML = appTitle;
+    document.getElementById('title')!.innerHTML = appTitle;
 
     updateInnerHTML('step_one_title', 'step_one_title');
     updateInnerHTML('step_one_desc', 'step_one_desc');
@@ -37,19 +43,19 @@ function startDeviceAutosearch() {
     }, 1000);
 }
 
-window.spl.on('setInitialised', (event, init) => {
+window.spl.on('setInitialised', (event: any, init: boolean) => {
     initialised = init;
     refreshGUI();
 });
 
-window.spl.on('deviceStatusUpdate', (event, connected) => {
+window.spl.on('deviceStatusUpdate', (event: any, connected: boolean) => {
     if (lastDeviceStatus != connected) {
         lastDeviceStatus = connected;
         refreshGUI();
     }
 });
 
-function showToast(text, icon) {
+function showToast(text: string, icon: string) {
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -57,7 +63,7 @@ function showToast(text, icon) {
         showConfirmButton: false,
         timer: 5000,
         timerProgressBar: true,
-        didOpen: (toast) => {
+        didOpen: (toast: any) => {
             toast.addEventListener('mouseenter', Swal.stopTimer)
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
@@ -69,24 +75,24 @@ function showToast(text, icon) {
     });
 }
 
-window.spl.on('showToast', (event, text, icon) => {
+window.spl.on('showToast', (event: any, text: string, icon: string) => {
     showToast(text, icon);
 });
 
-window.spl.on('disableAllInput', (event, disable) => {
+window.spl.on('disableAllInput', (event: any, disable: boolean) => {
     disableAllInput = disable;
     refreshGUI();
 });
 
-window.spl.on('refreshGUI', (event) => {
+window.spl.on('refreshGUI', (event: any) => {
     refreshGUI();
 });
 
-window.spl.on('showPayloadLaunchedPrompt', (event, success) => {
+window.spl.on('showPayloadLaunchedPrompt', (event: any, success: boolean) => {
     if (success) {
-        title = window.spl.getLocaleString('payload_delivery_success');
+        var title = window.spl.getLocaleString('payload_delivery_success');
     } else {
-        title = window.spl.getLocaleString('payload_delivery_failed');
+        var title = window.spl.getLocaleString('payload_delivery_failed');
     }
 
     Swal.fire({
@@ -98,7 +104,7 @@ window.spl.on('showPayloadLaunchedPrompt', (event, success) => {
         showDenyButton: true,
         denyButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">' + window.spl.getLocaleString("quit_application") + '</a>',
         showCancelButton: false,
-    }).then((result) => {
+    }).then((result: any) => {
         if (result.isConfirmed) {
         } else if (result.isDenied) {
             window.spl.quitApplication();
@@ -107,7 +113,7 @@ window.spl.on('showPayloadLaunchedPrompt', (event, success) => {
 });
 
 function refreshGUI() {
-    function updateButton(button, confirm, text = '') {
+    function updateButton(button: HTMLElement, confirm: boolean, text: string = '') {
         if (confirm) {
             button.style.border = '0.1em solid  var(--device-found-color)';
             button.style.color = 'var(--device-found-color)';
@@ -132,28 +138,28 @@ function refreshGUI() {
     var selectLatestHekateBtn = document.getElementById('selectLatestHekateBtn');
 
     if ((initialised) && (lastDeviceStatus)) {
-        updateButton(deviceStatusContainerDiv, true);
-        deviceStatusDiv.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("switch_found") + '</div>';
-        deviceProgressDiv.style.display = 'none';
+        updateButton(deviceStatusContainerDiv!, true);
+        deviceStatusDiv!.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("switch_found") + '</div>';
+        deviceProgressDiv!.style.display = 'none';
         currentStep = 2;
     } else {
-        updateButton(deviceStatusContainerDiv, false);
-        deviceStatusDiv.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("searching_for_switch") + '</div>';
-        deviceProgressDiv.style.display = 'inline';
+        updateButton(deviceStatusContainerDiv!, false);
+        deviceStatusDiv!.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("searching_for_switch") + '</div>';
+        deviceProgressDiv!.style.display = 'inline';
     }
 
-    payload = ((initialised) && (window.spl.validatePayload()));
+    const payload = ((initialised) && (window.spl.validatePayload()));
     if (payload) {
-        updateButton(selectPayloadFromFileSystemBtn, true, payload.replace(/^.*[\\\/]/, ''));
+        updateButton(selectPayloadFromFileSystemBtn!, true, payload.replace(/^.*[\\\/]/, ''));
 
         // Only allow step 3 if Switch is connected.
         if (lastDeviceStatus) {
             currentStep = 3;
         }
     } else {
-        updateButton(selectPayloadFromFileSystemBtn, false, window.spl.getLocaleString('open_local_payload'));
-        updateButton(selectLatestFuseeBtn, false, window.spl.getLocaleString('get_fusee_payload'));
-        updateButton(selectLatestHekateBtn, false, window.spl.getLocaleString('get_hekate_payload'))
+        updateButton(selectPayloadFromFileSystemBtn!, false, window.spl.getLocaleString('open_local_payload'));
+        updateButton(selectLatestFuseeBtn!, false, window.spl.getLocaleString('get_fusee_payload'));
+        updateButton(selectLatestHekateBtn!, false, window.spl.getLocaleString('get_hekate_payload'))
     }
 
     if (disableAllInput) {
@@ -165,15 +171,15 @@ function refreshGUI() {
         var currentInstructionDiv = document.getElementById(instructionID);
 
         if (i == currentStep) {
-            currentInstructionDiv.classList.remove('fade-out');
-            currentInstructionDiv.classList.add('fade-in');
-            currentInstructionDiv.classList.remove('nouserselect');
-            currentInstructionDiv.style.pointerEvents = 'auto';
+            currentInstructionDiv!.classList.remove('fade-out');
+            currentInstructionDiv!.classList.add('fade-in');
+            currentInstructionDiv!.classList.remove('nouserselect');
+            currentInstructionDiv!.style.pointerEvents = 'auto';
         } else {
-            currentInstructionDiv.classList.add('fade-out')
-            currentInstructionDiv.classList.remove('fade-in');
-            currentInstructionDiv.classList.add('nouserselect');
-            currentInstructionDiv.style.pointerEvents = 'none';
+            currentInstructionDiv!.classList.add('fade-out')
+            currentInstructionDiv!.classList.remove('fade-in');
+            currentInstructionDiv!.classList.add('nouserselect');
+            currentInstructionDiv!.style.pointerEvents = 'none';
         }
     }
 
@@ -192,10 +198,10 @@ function doWindowsSwitchDriverPrompt() {
             denyButtonText: "<a class='nouserselect' style='color:var(--text-color);'>" + window.spl.getLocaleString('driver_already_installed') + "</a>",
             showDenyButton: true,
             showCancelButton: false
-        }).then((result) => {
+        }).then((result: any) => {
             if (result.isConfirmed) {
                 window.spl.launchDriverInstaller();
-                window.spl.on('getDriverInstallerLaunchCode', (event, code) => {
+                window.spl.on('getDriverInstallerLaunchCode', (event: any, code: string) => {
                     window.spl.setDriverCheckAsComplete();
                     console.log('Driver installer exit code:' + code);
                 });
@@ -208,16 +214,16 @@ function doWindowsSwitchDriverPrompt() {
 
 // Drag drop stuff...
 
-var dropZone = document.getElementById('dropzone');
+const dropZone = document.getElementById('dropzone');
 
 function showDropZone() {
-	dropZone.style.display = "block";
+	dropZone!.style.display = "block";
 }
 function hideDropZone() {
-    dropZone.style.display = "none";
+    dropZone!.style.display = "none";
 }
 
-function handleDrop(e) {
+function handleDrop(e: any) {
     e.preventDefault();
     hideDropZone();
 
@@ -249,9 +255,9 @@ window.addEventListener('dragenter', function(e) {
 //dropZone.addEventListener('dragenter', allowDrag);
 
 // 3
-dropZone.addEventListener('dragleave', function(e) {
+dropZone!.addEventListener('dragleave', function(e) {
     hideDropZone();
 });
 
 // 4
-dropZone.addEventListener('drop', handleDrop);
+dropZone!.addEventListener('drop', handleDrop);

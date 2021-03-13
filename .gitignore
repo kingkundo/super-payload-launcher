@@ -6,6 +6,7 @@ payloads/
 dist/app.js
 dist/main.js
 dist/preload.js
+dist/renderer.js
 
 #-----
 
