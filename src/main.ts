@@ -110,6 +110,7 @@ export default class Main {
             height: height,
             backgroundColor: '#121212',
             show: false,
+            //frame: false,
             webPreferences: {
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
