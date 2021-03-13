@@ -21,7 +21,6 @@
             "label": "Build Debug",
             "dependsOn": [
                 "Compile TS to JS",
-                //"Minify JS"
             ],
             "dependsOrder": "sequence"
         },
