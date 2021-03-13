@@ -338,7 +338,7 @@ export default class Main {
                 const files = await fs.promises.readdir( cacheFolderPath );
                 for (const file of files) {
                     // NOTE: Sometimes won't work unless you have this sleep ????
-                    await new Promise(r => setTimeout(r, 1000));
+                    //await new Promise(r => setTimeout(r, 1000));
                     if (file.includes(ZIP_NAME_INCLUDES) && file.includes('.bin')) {
                         const newPath = path.join(__dirname, 'payloads', 'downloads', file);
                         await fs.promises.rename(path.join(cacheFolderPath, file), newPath);

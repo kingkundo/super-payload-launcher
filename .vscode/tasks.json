@@ -28,7 +28,7 @@
             "label": "Build Production",
             "dependsOn": [
                 "Compile TS to JS",
-                "Minify JS",
+                //"Minify JS",
             ],
             "dependsOrder": "sequence"
         }
