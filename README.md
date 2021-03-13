@@ -18,49 +18,23 @@ Head to [the releases page](https://github.com/versionxcontrol/super-payload-lau
 ---
 
 # How to build the application (for developers) 🏗️
-This is an application built using [Electron](https://www.electronjs.org/) and written in mostly Typescript, with the renderer remaining in pure Javascript. To get started make sure you've got NodeJS installed and up to date.
+This is an application built using [Electron](https://www.electronjs.org/) and written in mostly Typescript.. To get started make sure you've got NodeJS installed and up to date.
 
-Check out the repo to your machine, and open the project's folder in your command line of choice.
+Check out the repo to your machine, and load the **spl.code-workspace** in [Visual Studio Code](https://code.visualstudio.com/)
 <br />
 
-## **The short way**
-### Install dependencies:
+In the integrated terminal, type the following to get this project's dependencies.
+
 ```
 npm install
 ```
 
-Then load the **spl.code-workspace** in [Visual Studio Code](https://code.visualstudio.com/) and use my premade launch configuration. Just open the workspace and hit play, on Windows, MacOS or Linux.
-<br />
-
-## **The long way**
-
-### Install dependencies:
-```
-npm install
-```
-### Compile the Typescript to Javascript
-Windows:
-```
-tsc.cmd
-```
-Not Windows:
-```
-tsc
-```
-### Run the application:
-Windows:
-```
-node_modules/.bin/electron.cmd
-```
-Not Windows:
-```
-node_modules/.bin/electron
-```
-
+Then run the launch task provided and away you go.
 <br />
 
 ### To fix broken webusb bindings:
-The current version of the webusb library has issues with it's binding file. If you're suffering from crashes or errors when building from source, run this command in the project folder.
+The current version of the webusb library has issues with its binding file. If you're suffering from crashes or errors when building from source, get the version of the bindings file that the error tells you to, then run this command in the project folder.
+
 #### Windows
 ```
 node_modules/.bin/electron-rebuild.bat
