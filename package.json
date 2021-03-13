@@ -26,10 +26,10 @@
         "icon": "build/icon.ico",
         "overwrite": true,
         "ignore": [
+          "^(/.vscode$)",
           "^(/.github$)",
           "^(/build$)",
-          "^(/.vscode$)",
-          "^(/.icons$)",
+          "^(/icons$)",
           "^(/src$)",
           "drivercheckcomplete",
           ".gitignore",
@@ -37,6 +37,7 @@
           "README.md",
           "package-lock.json",
           "tsconfig.json",
+          "gruntfile.js",
           "spl.code-workspace"
         ]
       },

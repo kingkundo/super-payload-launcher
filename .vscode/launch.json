@@ -12,7 +12,7 @@
                 "ELECTRON_ENABLE_LOGGING": "true"
             },
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build",
+            "preLaunchTask": "Build Debug",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
             "windows": {
                 "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
@@ -25,7 +25,7 @@
         {
             "command": "npm run make",
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build",
+            "preLaunchTask": "Build Production",
             "name": "Build application release",
             "request": "launch",
             "type": "node-terminal"

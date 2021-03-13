@@ -3,11 +3,8 @@ module.exports = function (grunt) {
 
         // define source files and their destinations
         uglify: {
-            options: {
-                preserveComments: /^#/
-              },
             files: {
-                src: 'src/*.js',  // source files mask
+                src: 'dist/*.js',  // source files mask
                 dest: 'dist/',    // destination folder
                 expand: true,    // allow dynamic building
                 flatten: true,   // remove all unnecessary nesting

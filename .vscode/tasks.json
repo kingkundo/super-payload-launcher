@@ -18,32 +18,18 @@
             "command": "${workspaceFolder}//node_modules//.bin/grunt"
         },
         {
-            "label": "Delete Temp JS Files",
-            "type": "shell",
-            "windows": {
-                "command": "Remove-item",
-                "args": [
-                    "${workspaceFolder}//src//*.js",
-                    "-recurse"
-                ]
-            },
-            "command": "find ${workspaceFolder}//src// -name '*.js' -delete"
-        },
-        {
-            "label": "Build",
+            "label": "Build Debug",
             "dependsOn": [
                 "Compile TS to JS",
+                //"Minify JS"
             ],
             "dependsOrder": "sequence"
         },
         {
-            // To use this task, you must comment out the
-            // outDir option in tsconfig.json 
             "label": "Build Production",
             "dependsOn": [
                 "Compile TS to JS",
                 "Minify JS",
-                "Delete Temp JS Files"
             ],
             "dependsOrder": "sequence"
         }

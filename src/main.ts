@@ -331,25 +331,27 @@ export default class Main {
         event.sender.send('showToast', Main.getLocaleString('downloading_hekate'), 'info', '99999');
         var hekateZipFile = await Main.downloadAssetFromGithubLatestRelease('CTCaer', 'hekate', ZIP_NAME_INCLUDES, cacheFolderPath, false);
         if (hekateZipFile !== false)  {
-            event.sender.send('showToast', Main.getLocaleString('hekate_downloaded'), 'success');
             try {
                 const extract = require('extract-zip');
                 await extract(hekateZipFile, { dir: cacheFolderPath });
-    
                 const fs = require('fs');
                 const files = await fs.promises.readdir( cacheFolderPath );
                 for (const file of files) {
+                    // NOTE: Sometimes won't work unless you have this sleep ????
+                    await new Promise(r => setTimeout(r, 1000));
                     if (file.includes(ZIP_NAME_INCLUDES) && file.includes('.bin')) {
                         const newPath = path.join(__dirname, 'payloads', 'downloads', file);
                         await fs.promises.rename(path.join(cacheFolderPath, file), newPath);
                         Main.payloadPath = newPath;
+
+                        event.sender.send('showToast', Main.getLocaleString('hekate_downloaded'), 'success');
     
                         if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
                             Main.launchPayload(event);
                         } else {
                             event.sender.send('refreshGUI');
                         }
-    
+                        
                         event.sender.send('disableAllInput', false);
                         Main.deleteEverythingInPath(cacheFolderPath);
                         return;
@@ -358,11 +360,11 @@ export default class Main {
             } catch (err) {
                 console.log(err);
             }
-    
-            event.sender.send('disableAllInput', false);
-            event.sender.send('showToast', Main.getLocaleString('payload_download_failed'), 'error');
-            Main.deleteEverythingInPath(cacheFolderPath);
         }
+
+        event.sender.send('disableAllInput', false);
+        event.sender.send('showToast', Main.getLocaleString('payload_download_failed'), 'error');
+        Main.deleteEverythingInPath(cacheFolderPath);
     }
 
     private static validatePayload() {
