@@ -1,7 +1,7 @@
 {
   "name": "super-payload-launcher",
   "productName": "Super Payload Launcher",
-  "version": "1.2.0",
+  "version": "1.2.5",
   "description": "An easy and user friendly Nintendo Switch payload injecting tool",
   "main": "dist/app.js",
   "scripts": {
