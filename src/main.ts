@@ -297,7 +297,7 @@ export default class Main {
         const PAYLOAD_NAME = 'fusee-primary.bin'
         const path = require('path');
         const payloadDownloadFolderPath = path.join(__dirname, 'payloads', 'downloads');
-        event.sender.send('showToast', Main.getLocaleString('downloading_fusee'), 'info');
+        event.sender.send('showToast', Main.getLocaleString('downloading_fusee'), 'info', '99999');
         const newFuseePath = await Main.downloadAssetFromGithubLatestRelease('Atmosphere-NX', 'Atmosphere', PAYLOAD_NAME, payloadDownloadFolderPath);
         if (newFuseePath !== false)  {
             const newPath = path.join(__dirname, 'payloads', 'downloads', ('latest-' + PAYLOAD_NAME));
@@ -328,7 +328,7 @@ export default class Main {
         const path = require('path');
         const cacheFolderPath = path.join(__dirname, 'payloads', 'downloads', 'cache');
         Main.deleteEverythingInPath(cacheFolderPath);
-        event.sender.send('showToast', Main.getLocaleString('downloading_hekate'), 'info');
+        event.sender.send('showToast', Main.getLocaleString('downloading_hekate'), 'info', '99999');
         var hekateZipFile = await Main.downloadAssetFromGithubLatestRelease('CTCaer', 'hekate', ZIP_NAME_INCLUDES, cacheFolderPath, false);
         if (hekateZipFile !== false)  {
             event.sender.send('showToast', Main.getLocaleString('hekate_downloaded'), 'success');

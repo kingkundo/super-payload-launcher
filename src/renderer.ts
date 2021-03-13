@@ -55,13 +55,13 @@ window.spl.on('deviceStatusUpdate', (event: any, connected: boolean) => {
     }
 });
 
-function showToast(text: string, icon: string) {
+function showToast(text: string, icon: string, timeout: number = 5000) {
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
         background: 'var(--main-background-color)',
         showConfirmButton: false,
-        timer: 5000,
+        timer: timeout,
         timerProgressBar: true,
         didOpen: (toast: any) => {
             toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -75,8 +75,8 @@ function showToast(text: string, icon: string) {
     });
 }
 
-window.spl.on('showToast', (event: any, text: string, icon: string) => {
-    showToast(text, icon);
+window.spl.on('showToast', (event: any, text: string, icon: string, timeout: number = 5000) => {
+    showToast(text, icon, timeout);
 });
 
 window.spl.on('disableAllInput', (event: any, disable: boolean) => {
