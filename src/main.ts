@@ -293,8 +293,11 @@ export default class Main {
 
     private static async selectLatestFusee(event: Electron.IpcMainEvent) {
         event.sender.send('disableAllInput', true);
-    
-        const PAYLOAD_NAME = 'fusee-primary.bin'
+
+        // LEGACY ATMOSPHERE:
+        //const PAYLOAD_NAME = 'fusee-primary.bin';
+        
+        const PAYLOAD_NAME = 'fusee.bin';
         const path = require('path');
         const payloadDownloadFolderPath = path.join(__dirname, 'payloads', 'downloads');
         event.sender.send('showToast', Main.getLocaleString('downloading_fusee'), 'info', '99999');
