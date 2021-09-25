@@ -37,7 +37,7 @@ The current version of the webusb library has issues with its binding file. If y
 
 #### Windows
 ```
-node_modules/.bin/electron-rebuild.bat
+node_modules/.bin/electron-rebuild.cmd
 ```
 #### MacOS/Linux
 ```
