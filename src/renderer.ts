@@ -32,7 +32,8 @@ function writeTranslatedText() {
     updateInnerHTML('step_one_desc', 'step_one_desc');
     updateInnerHTML('step_one_secondary_desc', 'step_one_sec_desc', '<b>', '</b>');
     updateInnerHTML('step_two_title', 'step_two_title');
-    updateInnerHTML('step_two_extra_desc', 'step_two_extra_desc')
+    updateInnerHTML('favorite_payload_desc', 'favorite_payload_desc');
+    updateInnerHTML('drag_drop_payload_desc', 'drag_drop_payload_desc')
     updateInnerHTML('step_three_title', 'step_three_title');
     updateInnerHTML('launch_payload_button', 'launch_payload_button');
 }
@@ -99,15 +100,19 @@ window.spl.on('showPayloadLaunchedPrompt', (event: any, success: boolean) => {
         title: '<a class="nouserselect" style="color:var(--title-text-color);">' + title + '</a>',
         icon: 'success',
         background: 'var(--main-background-color)',
-        confirmButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>' + window.spl.getLocaleString("launch_another_payload") + '</b></a>',
-        showConfirmButton: true,
+        confirmButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">' + window.spl.getLocaleString("save_as_favorite") + '</a>',
+        showConfirmButton: success,
         showDenyButton: true,
-        denyButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">' + window.spl.getLocaleString("quit_application") + '</a>',
-        showCancelButton: false,
+        denyButtonText: '<a class="nouserselect" style="color:var(--text-color);"><b>' + window.spl.getLocaleString("launch_another_payload") + '</b></a>',
+        showCancelButton: true,
+        cancelButtonText: '<a class="nouserselect" style="color:var(--title-text-color);">' + window.spl.getLocaleString("quit_application") + '</a>',
     }).then((result: any) => {
         if (result.isConfirmed) {
-        } else if (result.isDenied) {
+            window.spl.setPayloadAsFavorite();        
+        } else if (result.canceled) {
             window.spl.quitApplication();
+        } else if (result.isDenied) {
+            
         }
     });
 });
@@ -130,22 +135,33 @@ function refreshGUI() {
     currentStep = 1;
 
     var deviceStatusContainerDiv = document.getElementById('devicestatuscontainerdiv');
+    var deviceStatusProgressDiv = document.getElementById('devicestatusprogressdiv');
     var deviceStatusDiv = document.getElementById('devicestatusdiv');
-    var deviceProgressDiv = document.getElementById('devicestatusprogressdiv');
 
+    var selectFavoritePayloadBtn = document.getElementById('selectFavoritePayloadBtn');
     var selectPayloadFromFileSystemBtn = document.getElementById('selectPayloadFromFileSystemBtn');
     var selectLatestFuseeBtn = document.getElementById('selectLatestFuseeBtn');
     var selectLatestHekateBtn = document.getElementById('selectLatestHekateBtn');
 
+    if (window.spl.doesFavoritePayloadExist()) {
+        selectFavoritePayloadBtn!.style.display = '';
+    } else {
+        selectFavoritePayloadBtn!.style.display = 'none';
+    }
+
     if ((initialised) && (lastDeviceStatus)) {
         updateButton(deviceStatusContainerDiv!, true);
         deviceStatusDiv!.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("switch_found") + '</div>';
-        deviceProgressDiv!.style.display = 'none';
+        deviceStatusProgressDiv!.style.animationPlayState = 'paused';
+        deviceStatusProgressDiv!.style.backgroundColor = 'var(--device-found-color)';
+        //deviceProgressDiv!.style.display = 'none';
         currentStep = 2;
     } else {
         updateButton(deviceStatusContainerDiv!, false);
         deviceStatusDiv!.innerHTML = '<div class="nouserselect">' + window.spl.getLocaleString("searching_for_switch") + '</div>';
-        deviceProgressDiv!.style.display = 'inline';
+        deviceStatusProgressDiv!.style.animationPlayState = 'running';
+        deviceStatusProgressDiv!.style.backgroundColor = 'var(--searching-device-color)';
+        //deviceProgressDiv!.style.display = 'inline';
     }
 
     const payload = ((initialised) && (window.spl.validatePayload()));
@@ -157,6 +173,7 @@ function refreshGUI() {
             currentStep = 3;
         }
     } else {
+        updateButton(selectFavoritePayloadBtn!, false, window.spl.getLocaleString('open_favorite_payload'))
         updateButton(selectPayloadFromFileSystemBtn!, false, window.spl.getLocaleString('open_local_payload'));
         updateButton(selectLatestFuseeBtn!, false, window.spl.getLocaleString('get_fusee_payload'));
         updateButton(selectLatestHekateBtn!, false, window.spl.getLocaleString('get_hekate_payload'))

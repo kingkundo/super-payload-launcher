@@ -12,6 +12,9 @@ contextBridge.exposeInMainWorld(
         setPayloadManually: (newPath: string) => {
             ipcRenderer.send('setPayloadManually', newPath);
         },
+        selectFavoritePayload: () => {
+            ipcRenderer.send('selectFavoritePayload');
+        },
         selectPayloadFromFileSystem: () => {
             ipcRenderer.send('selectPayloadFromFileSystem');
         },
@@ -38,6 +41,12 @@ contextBridge.exposeInMainWorld(
         },
         hasDriverBeenChecked: () => {
             return ipcRenderer.sendSync('hasDriverBeenChecked');
+        },
+        doesFavoritePayloadExist: () => {
+            return ipcRenderer.sendSync('doesFavoritePayloadExist');
+        },
+        setPayloadAsFavorite: () => {
+            ipcRenderer.send('setPayloadAsFavorite');
         },
         setDriverCheckAsComplete: () => {
             ipcRenderer.send('setDriverCheckAsComplete');

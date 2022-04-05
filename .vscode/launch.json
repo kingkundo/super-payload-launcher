@@ -23,7 +23,7 @@
             "outputCapture": "std"
         },
         {
-            "command": "npm run make",
+            "command": "npm run package",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build Production",
             "name": "Build application release",

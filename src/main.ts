@@ -15,6 +15,7 @@ export default class Main {
     static BrowserWindow: typeof BrowserWindow;
 
     static payloadPath: string = '';
+    static previousPayloadPath: string = '';
 
     // Main application class constructor.
     static main(app: Electron.App, browserWindow: typeof BrowserWindow) {
@@ -36,8 +37,11 @@ export default class Main {
         ipcMain.on('setPayloadManually', (event: any, newPath: string) => Main.setPayloadManually(event, newPath));
         ipcMain.on('payloadSendAutomatically', (event: any) => Main.isPayloadSendAutomatically(event));
         ipcMain.on('hasDriverBeenChecked', (event: any) => Main.hasDriverBeenChecked(event));
+        ipcMain.on('doesFavoritePayloadExist', (event: any) => Main.doesFavoritePayloadExist(event));
+        ipcMain.on('setPayloadAsFavorite', (event: any) => Main.setPayloadAsFavorite(event));
         ipcMain.on('setDriverCheckAsComplete', (event: any) => Main.setDriverCheckAsComplete(event));
         ipcMain.on('launchDriverInstaller', (event: any) => Main.launchDriverInstaller(event));
+        ipcMain.on('selectFavoritePayload', (event: any) => Main.selectFavoritePayload(event));
         ipcMain.on('selectPayloadFromFileSystem', (event: any) => Main.selectPayloadFromFileSystem(event));
         ipcMain.on('selectLatestFusee', (event: any) => Main.selectLatestFusee(event));
         ipcMain.on('selectLatestHekate', (event: any) => Main.selectLatestHekate(event));
@@ -93,9 +97,9 @@ export default class Main {
 
         // Create the application's main window.
         if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
-            var height = 650;
+            var height = 700;
         } else {
-            var height = 750;
+            var height = 800;
         }
     
         if (DEV_MODE) {
@@ -205,8 +209,7 @@ export default class Main {
 
     private static reset(event: Electron.IpcMainEvent) {
         Main.payloadPath = '';
-        event.sender.send('setInitialised', false);
-    
+        event.sender.send('setInitialised', false);    
         const os = require('os');
         if (os.type() == 'Darwin') {
             Main.application.dock.setBadge('');
@@ -227,6 +230,20 @@ export default class Main {
         }
     }
 
+    private static doesFavoritePayloadExist(event: Electron.IpcMainEvent) {
+        const path = require('path');
+        var driverCheckCompleteFilePath = path.join(__dirname, 'payloads', 'fav.bin');
+        try {
+            const fs = require('fs');
+            if (fs.existsSync(driverCheckCompleteFilePath)) {
+                event.returnValue = true;
+                return true;
+            }
+        } catch (err) { }
+        event.returnValue = false;
+        return false;
+    }
+
     private static hasDriverBeenChecked(event: Electron.IpcMainEvent) {
         const path = require('path');
         var driverCheckCompleteFilePath = path.join(__dirname, 'drivercheckcomplete');
@@ -239,6 +256,23 @@ export default class Main {
         } catch (err) { }
         event.returnValue = false;
         return false;
+    }
+
+    private static setPayloadAsFavorite(event: Electron.IpcMainEvent) {
+        if (!Main.validatePayload(Main.previousPayloadPath)) {
+            event.sender.send('showToast', Main.getLocaleString('failed_to_save_favorite'), 'error');
+            return;
+        }
+
+        const path = require('path');
+        const fs = require('fs');
+        fs.copyFile(Main.previousPayloadPath, path.join(__dirname, 'payloads', 'fav.bin'), (err : any) => {
+            if (err) {
+                event.sender.send('showToast', Main.getLocaleString('failed_to_save_favorite'), 'error');
+            } else {
+                event.sender.send('showToast', Main.getLocaleString('favorite_saved'), 'success');
+            }
+          });
     }
 
     private static setDriverCheckAsComplete(event: Electron.IpcMainEvent) {
@@ -257,6 +291,26 @@ export default class Main {
         driverprocess.on('exit', function (code: string) {
             event.sender.send('getDriverInstallerLaunchCode', code);
         });
+    }
+
+    private static selectFavoritePayload(event : Electron.IpcMainEvent) {
+        Main.payloadPath = '';
+
+        const path = require('path');
+        const fs = require('fs');
+        const tempPath = path.join(__dirname, 'payloads', 'fav.bin');
+        if (!fs.existsSync(tempPath)) {
+            event.sender.send('showToast', Main.getLocaleString('favorite_payload_lost'), 'error');
+            return;
+        }
+
+        Main.payloadPath = tempPath;
+
+        if (SEND_PAYLOAD_IMMEDIATELY_UPON_SELECTION) {
+            Main.launchPayload(event);
+        } else {
+            event.sender.send('refreshGUI');
+        }
     }
 
     private static selectPayloadFromFileSystem(event: Electron.IpcMainEvent) {
@@ -370,11 +424,16 @@ export default class Main {
         Main.deleteEverythingInPath(cacheFolderPath);
     }
 
-    private static validatePayload() {
+    private static validatePayload(alternatePath = '') {
+        var pathToCheck = Main.payloadPath;
+        if (alternatePath != '') {
+            pathToCheck = alternatePath;
+        }
+
         const fs = require('fs')
         try {
-            if ((Main.payloadPath != '') && (fs.existsSync(Main.payloadPath))) {
-                return Main.payloadPath;
+            if ((pathToCheck != '') && (fs.existsSync(pathToCheck))) {
+                return pathToCheck;
             }
         } catch (err) { }
     
@@ -384,31 +443,35 @@ export default class Main {
     private static async getDevice() {
         const USB = require("WEBUSB").usb;
         try {
-            return await USB.requestDevice({ filters: [{ vendorId: 0x0955 }] });
-        } catch (error) { }
+            const switchDevice = await USB.requestDevice({ filters: [{ vendorId: 0x0955 }]});
+            if (switchDevice) {
+                return switchDevice;
+            }
+        } catch (error) {}
 
         return null;
     }
 
     private static async searchForDevice(event: Electron.IpcMainEvent) {
-        var result = await Main.getDevice() != null;
+        const device = await Main.getDevice();
+        const deviceFound = device != null;
 
         const os = require('os');
         if (os.type() == 'Darwin') {
-            if (result) {
+            if (deviceFound) {
                 Main.application.dock.setBadge(SWITCH_EXISTS_BADGE);
             } else {
                 Main.application.dock.setBadge('');
             }
         }
 
-        event.sender.send('deviceStatusUpdate', result);
+        event.sender.send('deviceStatusUpdate', deviceFound);
     }
 
     private static async launchPayload(event: Electron.IpcMainEvent) {
-        var device;
-    
+
         function onPayloadLaunchCompletion(success: boolean) {
+            Main.previousPayloadPath = Main.payloadPath;
             event.sender.send('showPayloadLaunchedPrompt', success);
             Main.reset(event);
             event.sender.send('disableAllInput', false);
@@ -416,7 +479,7 @@ export default class Main {
             if (success) {
                 console.log('The stack has been smashed!');
             } else {
-                console.log('Injecting the payload and smashing the stack failed.');
+                console.error('Injecting the payload and smashing the stack failed.');
             }
         }
     
@@ -429,15 +492,20 @@ export default class Main {
                 onPayloadLaunchCompletion(code == 0);
             });
         }
+
+        // NOTE: For some reason we have to delay arbitrarily
+        // to prevent random crashing in the webusb library... Lol.
+        event.sender.send('showToast', Main.getLocaleString('now_launching_payload'), 'info');
+        await new Promise(r => setTimeout(r, 1000));
     
-        device = await Main.getDevice();
-        if (device == null) {
-            console.log('The selected device is null... Cannot launch payload.');
+        const device = await Main.getDevice();
+        if (!device) {
+            console.error('The selected device is null... Cannot launch payload.');
             return;
         }
     
         if (!Main.validatePayload()) {
-            console.log('The selected payload path is invalid, or the payload is broken... Cannot launch payload.');
+            console.error('The selected payload path is invalid, or the payload is broken... Cannot launch payload.');
             return;
         }
     
@@ -477,7 +545,7 @@ export default class Main {
                 await device.transferOut(1, new ArrayBuffer(0x1000));
             }
         } catch (error) {
-            console.log('There was an error accessing the device.');
+            console.error('There was an error accessing the device.');
             onPayloadLaunchCompletion(false);
             return;
         }
@@ -494,7 +562,7 @@ export default class Main {
                 index: 0x00
             }, vulnerabilityLength);
             success = true;
-        } catch (error) {
+        } catch (error : any) {
             success = error.message.includes('LIBUSB_TRANSFER_TIMED_OUT');
         }
     

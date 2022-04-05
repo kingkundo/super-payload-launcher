@@ -27,13 +27,16 @@
 
         <div class="instruction" id="i2">
             <h3 id="step_two_title" class="nouserselect"></h3>
+            <p style="display:none;" id="favorite_payload_desc" class="nouserselect rcmdescription"></p>
+            <div class="payloadBtnContainer"><a id="selectFavoritePayloadBtn" class="splbutton"
+                onclick="window.spl.selectFavoritePayload();"></a></div>
             <div class="payloadBtnContainer"><a id="selectLatestFuseeBtn" class="splbutton"
                     onclick="window.spl.selectLatestFusee();"></a></div>
             <div class="payloadBtnContainer"><a id="selectLatestHekateBtn" class="splbutton"
                     onclick="window.spl.selectLatestHekate();"></a></div>
             <div class="payloadBtnContainer"><a id="selectPayloadFromFileSystemBtn" class="splbutton"
                     onclick="window.spl.selectPayloadFromFileSystem();"></a></div>
-            <p id="step_two_extra_desc" class="nouserselect rcmdescription"></p>
+            <p id="drag_drop_payload_desc" class="nouserselect rcmdescription"></p>
         </div>
 
         <div hidden class="instruction" id="i3">

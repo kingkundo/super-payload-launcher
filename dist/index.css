@@ -186,6 +186,7 @@ a.splbutton:hover{
   margin-right:20px;
   background-color: var(--searching-device-color);
   animation: sk-chase 2.5s infinite linear both;
+  animation-play-state: paused;
 }
 
 @keyframes sk-chase {
